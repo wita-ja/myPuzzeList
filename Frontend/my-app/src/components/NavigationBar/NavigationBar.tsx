@@ -30,9 +30,12 @@ const NavigationBar = (props: NavigationBarProps) => {
               <Dropdown.Item
                 as={Link}
                 to='/'
-                onClick={() => {
-                  setLogged(!isLogged);
-                }}
+                onClick={
+                  //TODO find way to pass it to parent
+                  () => {
+                    setLogged(!isLogged);
+                  }
+                }
               >
                 Log out
               </Dropdown.Item>
