@@ -66,8 +66,8 @@ const puzzles: Puzzle[] = [
     type: 'Remove string',
     brand: 'NotApproved',
     material: ['Metal', 'String'],
-    avgScore: null,
-    userScore: null,
+    avgScore: 'N/A',
+    userScore: 'N/A',
     approved: true,
   },
 ];

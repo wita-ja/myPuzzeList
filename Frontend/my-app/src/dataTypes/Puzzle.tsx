@@ -12,7 +12,7 @@ export default interface Puzzle {
   type: string;
   brand: string;
   material: string[];
-  avgScore: number | null;
-  userScore: string | number | null;
+  avgScore: number | string;
+  userScore: number | string;
   approved: boolean;
 }

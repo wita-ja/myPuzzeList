@@ -17,7 +17,7 @@ function App() {
       <GlobalHeader isLogged={isLogged} username={username}></GlobalHeader>
       <Switch>
         <Route exact path='/'>
-          <PuzzlesPage pageSize={30} />
+          <PuzzlesPage pageSize={2} />
         </Route>
         <Route path='/login'>
           <h2>Login page/modal </h2>
