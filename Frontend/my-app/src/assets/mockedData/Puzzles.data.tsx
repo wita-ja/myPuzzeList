@@ -1,11 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
+import Puzzle from '../../dataTypes/Puzzle';
 
-const puzzles = [
+const puzzles: Puzzle[] = [
   {
     id: uuidv4(),
     difficulty: 5,
     difficultyName: 'Average',
-    imagePath: './images/castLove.png',
+    imagePath: '/images/castLove.png',
     //difficultyId: uuidv4(),
     //puzzleImages_id: uuidv4(),
     solution_id: uuidv4(),
@@ -22,7 +23,7 @@ const puzzles = [
     id: uuidv4(),
     difficulty: 10,
     difficultyName: 'Mind Boggling',
-    imagePath: './images/excaliburr.png',
+    imagePath: '/images/excaliburr.png',
     //difficultyId: uuidv4(),
     //puzzleImages_id: uuidv4(),
     solution_id: uuidv4(),
@@ -39,7 +40,7 @@ const puzzles = [
     id: uuidv4(),
     difficulty: 7,
     difficultyName: 'Hard',
-    imagePath: './images/butterflysRevenge.png',
+    imagePath: '/images/butterflysRevenge.png',
     //difficultyId: uuidv4(),
     //puzzleImages_id: uuidv4(),
     solution_id: uuidv4(),
@@ -56,7 +57,7 @@ const puzzles = [
     id: uuidv4(),
     difficulty: 2,
     difficultyName: 'easy',
-    imagePath: './images/mosquito.png',
+    imagePath: '/images/mosquito.png',
     //difficultyId: uuidv4(),
     //puzzleImages_id: uuidv4(),
     solution_id: uuidv4(),
@@ -67,7 +68,7 @@ const puzzles = [
     material: ['Metal', 'String'],
     avgScore: null,
     userScore: null,
-    approved: false,
+    approved: true,
   },
 ];
 
