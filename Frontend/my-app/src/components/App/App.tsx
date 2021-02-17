@@ -4,33 +4,31 @@ import GlobalHeader from '../GlobalHeader';
 import { Button } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 import './App.styles.css';
+import PuzzlesPage from '../PuzzlesPage/PuzzlesPage';
 
 const isLogged: boolean = false;
 const username: string = 'Vitalij';
 
 //TODO add components to render into routes
+//TODO find way to make pageSize configurable
 function App() {
   return (
     <Router>
+      <GlobalHeader isLogged={isLogged} username={username}></GlobalHeader>
       <Switch>
         <Route exact path='/'>
-          <GlobalHeader isLogged={isLogged} username={username}></GlobalHeader>
-          <h2>Puzzle list </h2>
+          <PuzzlesPage pageSize={2} />
         </Route>
         <Route path='/login'>
-          <GlobalHeader isLogged={isLogged} username={username}></GlobalHeader>
           <h2>Login page/modal </h2>
         </Route>
         <Route path='/puzzle/:id'>
-          <GlobalHeader isLogged={isLogged} username={username}></GlobalHeader>
           <h2>Specific puzzle</h2>
         </Route>
         <Route path='/user/profile'>
-          <GlobalHeader isLogged={isLogged} username={username}></GlobalHeader>
           <h2>User profile</h2>
         </Route>
         <Route path='/user/collection'>
-          <GlobalHeader isLogged={isLogged} username={username}></GlobalHeader>
           <h2>User collection</h2>
         </Route>
         <Route path='*'>
