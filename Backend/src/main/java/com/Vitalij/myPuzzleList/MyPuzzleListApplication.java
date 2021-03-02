@@ -9,5 +9,4 @@ public class MyPuzzleListApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MyPuzzleListApplication.class, args);
 	}
-
 }
