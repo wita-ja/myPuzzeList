@@ -19,6 +19,9 @@ function App() {
         <Route exact path='/'>
           <PuzzlesPage pageSize={2} />
         </Route>
+        <Route path='puzzles/:page'>
+          <PuzzlesPage pageSize={2} />
+        </Route>
         <Route path='/login'>
           <h2>Login page/modal </h2>
         </Route>
