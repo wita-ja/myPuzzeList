@@ -1,7 +1,7 @@
 package com.Vitalij.myPuzzleList.puzzle.model.puzzle;
 
 import java.util.Set;
-import  java.util.UUID;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

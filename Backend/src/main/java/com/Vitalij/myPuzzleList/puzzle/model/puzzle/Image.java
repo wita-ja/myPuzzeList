@@ -27,7 +27,6 @@ public class Image {
     @Column(name = "PATH", nullable = false)
     private String path;
 
-    //to solve
     @ManyToMany(mappedBy = "puzzleImages")
     private Set<Puzzle> puzzles;
 

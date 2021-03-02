@@ -63,5 +63,4 @@ public class Puzzle {
     @Column(name = "BRAND")
     private String brand;
 
-
 }
