@@ -94,34 +94,32 @@ const PuzzleTable = (props: PuzzleTableProps) => {
         <Table.Body>
           {state.puzzles.map((puzzle) => {
             return (
-              puzzle.approved && (
-                <Table.Row key={puzzle.id} textAlign='center'>
-                  <Table.Cell>
-                    <Image
-                      alt={puzzle.title}
-                      src={process.env.PUBLIC_URL + puzzle.imagePath}
-                      size='mini'
-                      centered
-                    ></Image>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Header
-                      as={Link}
-                      to={`/puzzle/${puzzle.id}`}
-                      floated='left'
-                      textAlign='left'
-                      size='small'
-                      color='blue'
-                    >
-                      {puzzle.title}
-                      <Header.Subheader>{puzzle.description}</Header.Subheader>
-                    </Header>
-                  </Table.Cell>
-                  <Table.Cell>{puzzle.difficulty}</Table.Cell>
-                  <Table.Cell>{puzzle.avgScore}</Table.Cell>
-                  <Table.Cell>{puzzle.userScore}</Table.Cell>
-                </Table.Row>
-              )
+              <Table.Row key={puzzle.id} textAlign='center'>
+                <Table.Cell>
+                  <Image
+                    alt={puzzle.title}
+                    src={process.env.PUBLIC_URL + puzzle.imagePath[0]}
+                    size='mini'
+                    centered
+                  ></Image>
+                </Table.Cell>
+                <Table.Cell>
+                  <Header
+                    as={Link}
+                    to={`/puzzle/${puzzle.id}`}
+                    floated='left'
+                    textAlign='left'
+                    size='small'
+                    color='blue'
+                  >
+                    {puzzle.title}
+                    <Header.Subheader>{puzzle.description}</Header.Subheader>
+                  </Header>
+                </Table.Cell>
+                <Table.Cell>{puzzle.difficulty}</Table.Cell>
+                <Table.Cell>{puzzle.avgScore}</Table.Cell>
+                <Table.Cell>{puzzle.userScore}</Table.Cell>
+              </Table.Row>
             );
           })}
         </Table.Body>

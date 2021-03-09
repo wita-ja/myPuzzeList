@@ -1,5 +1,5 @@
 server:
-  port: 9090
+  port: 8080
 spring:
   datasource:
     platform: postgres
@@ -17,4 +17,4 @@ spring:
           lob:
             non_contextual_creation: true
     show-sql: true
-    database-platform:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect

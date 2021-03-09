@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/puzzle/v1")
+@RequestMapping("/api/puzzle/")
 public class PuzzleController {
     private final PuzzleService puzzleService;
     private final PuzzleRepository repository;
@@ -18,6 +18,7 @@ public class PuzzleController {
         this.repository = repository;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/getAll")
     public List<PuzzleSummaryDto> show() {
         return puzzleService.getPuzzleSummaries();
