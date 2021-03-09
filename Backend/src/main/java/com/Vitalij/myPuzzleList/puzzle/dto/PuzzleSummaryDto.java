@@ -3,6 +3,7 @@ package com.Vitalij.myPuzzleList.puzzle.dto;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.List;
 import java.util.UUID;
 
 @Value
@@ -12,7 +13,7 @@ public class PuzzleSummaryDto {
     String title;
     String difficulty;
     String description;
-    String imagePath;
+    List<String> imagePath;
     Double averageScore;
     Double userRating;
 }

@@ -34,7 +34,9 @@ public class UserPuzzle {
     @JoinColumn(name = "STATUS_ID", nullable = false)
     private Status status;
 
-    @Column(name = "SCORE" )
+    @Column(name = "SCORE")
     private Integer score;
 
+    @Column(name = "SOLUTION_UNLOCKED")
+    private Boolean solutionUnlocked;
 }
