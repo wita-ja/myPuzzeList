@@ -14,14 +14,6 @@ import TablePagination from './TablePagination';
 import useAxios from 'axios-hooks';
 import { AxiosError } from 'axios';
 
-interface PuzzleTableProps {
-  pageSize: number;
-  totalPages: number;
-  currentPage: number;
-  puzzles: Puzzle[];
-  direction?: 'ascending' | 'descending';
-}
-
 //TODO Improve Table.footer to disable buttons, show next batch of puzzles
 //TODO See if it's posible to generate HeaderCells from enum
 const PuzzleTable = () => {
@@ -194,7 +186,6 @@ const PuzzleTable = () => {
             <Table.HeaderCell colSpan='5'>
               <Segment textAlign='center' basic>
                 <TablePagination
-                  defaultActivePage={1}
                   totalPages={state.totalPages}
                   activePage={state.activePage}
                   onPageChange={handlePaginationChange}

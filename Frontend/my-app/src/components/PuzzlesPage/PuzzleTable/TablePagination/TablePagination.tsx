@@ -2,7 +2,6 @@ import React from 'react';
 import { Pagination, Icon, PaginationProps } from 'semantic-ui-react';
 
 interface TablePagination {
-  defaultActivePage: number;
   totalPages: number;
   activePage: number;
   onPageChange: (
@@ -12,7 +11,7 @@ interface TablePagination {
 }
 
 const TablePagination = (props: TablePagination) => {
-  const { totalPages, defaultActivePage, activePage, onPageChange } = props;
+  const { totalPages, activePage, onPageChange } = props;
 
   return (
     <>
