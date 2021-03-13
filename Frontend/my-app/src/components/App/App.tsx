@@ -10,17 +10,16 @@ const isLogged: boolean = false;
 const username: string = 'Vitalij';
 
 //TODO add components to render into routes
-//TODO find way to make pageSize configurable
 function App() {
   return (
     <Router>
       <GlobalHeader isLogged={isLogged} username={username}></GlobalHeader>
       <Switch>
         <Route exact path='/'>
-          <PuzzlesPage pageSize={2} />
+          <PuzzlesPage />
         </Route>
         <Route path='puzzles/:page'>
-          <PuzzlesPage pageSize={2} />
+          <PuzzlesPage />
         </Route>
         <Route path='/login'>
           <h2>Login page/modal </h2>

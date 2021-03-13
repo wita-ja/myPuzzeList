@@ -24,7 +24,7 @@ public class PuzzleController {
     public Page<PuzzleSummaryDto> show(
             @RequestParam(defaultValue = "0", name = "page") Integer pageNo
     ) {
-        Pageable pageable = PageRequest.of(pageNo, 2, Sort.unsorted());
+        Pageable pageable = PageRequest.of(pageNo-1, 2, Sort.unsorted());
         return puzzleService.getPuzzleSummaries(pageable);
     }
 
