@@ -37,6 +37,6 @@ public class UserPuzzle {
     @Column(name = "SCORE")
     private Integer score;
 
-    @Column(name = "SOLUTION_UNLOCKED")
+    @Column(name = "SOLUTION_UNLOCKED", nullable = false)
     private Boolean solutionUnlocked;
 }

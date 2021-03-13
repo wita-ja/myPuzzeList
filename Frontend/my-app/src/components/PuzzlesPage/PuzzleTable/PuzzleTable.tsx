@@ -1,46 +1,70 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Table, Image, Header, Segment } from 'semantic-ui-react';
+import {
+  Table,
+  Image,
+  Header,
+  Segment,
+  Loader,
+  PaginationProps,
+} from 'semantic-ui-react';
 import Puzzle from '../../../dataTypes/Puzzle';
 import _ from 'lodash';
 import TablePagination from './TablePagination';
+import useAxios from 'axios-hooks';
+import { AxiosError } from 'axios';
 
-interface PuzzleTableProps {
-  pageSize: number;
-  totalPages: number;
-  currentPage: number;
-  puzzles: Puzzle[];
-  direction?: 'ascending' | 'descending';
-}
-
-//TODO Enable pagination and rendering only max page size
 //TODO Improve Table.footer to disable buttons, show next batch of puzzles
 //TODO See if it's posible to generate HeaderCells from enum
-const PuzzleTable = (props: PuzzleTableProps) => {
+const PuzzleTable = () => {
   const [state, setState] = useState({
-    column: '',
-    puzzles: props.puzzles,
-    direction: props.direction, // will be undefined if not set as props in parent component
+    pageSize: 0,
+    totalPages: 0,
+    activePage: 1,
+    column: 'title', // kurio column headeri spaude
+    puzzles: [] as Puzzle[],
+    direction: 'ascending',
+    loading: false as boolean,
+    error: undefined as AxiosError<any> | undefined,
   });
+
+  const [{ data, loading, error }] = useAxios({
+    url: 'http://localhost:8080/api/puzzle/getAll',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
+    params: { page: state.activePage },
+  });
+
+  useEffect(() => {
+    setState({
+      ...state,
+      loading: true,
+    });
+
+    if (data) {
+      setState({
+        ...state,
+        puzzles: data.content,
+        pageSize: data.pageable.pageSize,
+        totalPages: data.totalPages,
+        loading: loading,
+      });
+    } else {
+      setState({
+        ...state,
+        error: error,
+        loading: loading,
+      });
+    }
+  }, [data, loading, error]);
 
   const handleSort = (clickedColumn: string) => () => {
     if (state.column !== clickedColumn) {
-      const key = clickedColumn as keyof typeof state.puzzles[0]; //TODO ask Simonas how to do it properly
-      const nums = state.puzzles
-        .filter(function (el) {
-          return typeof el[key] === 'number';
-        })
-        .sort();
-
-      const strings = state.puzzles
-        .filter(function (el) {
-          return typeof el[key] === 'string';
-        })
-        .sort();
-
       setState({
+        ...state,
         column: clickedColumn,
-        puzzles: _.sortBy(nums.concat(strings), [clickedColumn]),
+        puzzles: _.sortBy(state.puzzles, [clickedColumn]),
         direction: 'ascending',
       });
 
@@ -54,6 +78,27 @@ const PuzzleTable = (props: PuzzleTableProps) => {
     });
   };
 
+  const handlePaginationChange = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    pageInfo: PaginationProps
+  ) => {
+    setState({ ...state, activePage: pageInfo.activePage as number });
+  };
+
+  if (state.loading) return <Loader active></Loader>;
+  //TODO Implement error page component
+  if (state.error) {
+    console.log(state.error.response?.data);
+    return (
+      <>
+        <Header
+          textAlign='center'
+          size='huge'
+          color='red'
+        >{`${state.error.response?.data.error} \n ${state.error.response?.data.status}`}</Header>
+      </>
+    );
+  }
   return (
     <>
       <Table celled sortable>
@@ -61,28 +106,40 @@ const PuzzleTable = (props: PuzzleTableProps) => {
           <Table.Row textAlign='center'>
             <Table.HeaderCell>Image</Table.HeaderCell>
             <Table.HeaderCell
-              sorted={state.column === 'title' ? state.direction : undefined}
+              sorted={
+                state.column === 'title'
+                  ? (state.direction as 'ascending' | 'descending') //TODO Simonas
+                  : undefined
+              }
               onClick={handleSort('title')}
             >
               Title
             </Table.HeaderCell>
             <Table.HeaderCell
               sorted={
-                state.column === 'difficulty' ? state.direction : undefined
+                state.column === 'difficulty'
+                  ? (state.direction as 'ascending' | 'descending')
+                  : undefined
               }
               onClick={handleSort('difficulty')}
             >
               Difficulty
             </Table.HeaderCell>
             <Table.HeaderCell
-              sorted={state.column === 'avgScore' ? state.direction : undefined}
+              sorted={
+                state.column === 'avgScore'
+                  ? (state.direction as 'ascending' | 'descending')
+                  : undefined
+              }
               onClick={handleSort('avgScore')}
             >
               Avg Rating
             </Table.HeaderCell>
             <Table.HeaderCell
               sorted={
-                state.column === 'userScore' ? state.direction : undefined
+                state.column === 'userScore'
+                  ? (state.direction as 'ascending' | 'descending')
+                  : undefined
               }
               onClick={handleSort('userScore')}
             >
@@ -92,13 +149,13 @@ const PuzzleTable = (props: PuzzleTableProps) => {
         </Table.Header>
 
         <Table.Body>
-          {state.puzzles.map((puzzle) => {
+          {state.puzzles.map((puzzle: Puzzle) => {
             return (
               <Table.Row key={puzzle.id} textAlign='center'>
                 <Table.Cell>
                   <Image
-                    alt={puzzle.title}
-                    src={process.env.PUBLIC_URL + puzzle.imagePath[0]}
+                    alt={puzzle.title} //TODO probably need to change to proper one title != image name
+                    src={puzzle.imagePath[0] || 'images/NoImageAvailable.jpg'}
                     size='mini'
                     centered
                   ></Image>
@@ -117,8 +174,8 @@ const PuzzleTable = (props: PuzzleTableProps) => {
                   </Header>
                 </Table.Cell>
                 <Table.Cell>{puzzle.difficulty}</Table.Cell>
-                <Table.Cell>{puzzle.avgScore}</Table.Cell>
-                <Table.Cell>{puzzle.userScore}</Table.Cell>
+                <Table.Cell>{puzzle.avgScore || 'N/A'}</Table.Cell>
+                <Table.Cell>{puzzle.userScore || 'N/A'}</Table.Cell>
               </Table.Row>
             );
           })}
@@ -129,8 +186,9 @@ const PuzzleTable = (props: PuzzleTableProps) => {
             <Table.HeaderCell colSpan='5'>
               <Segment textAlign='center' basic>
                 <TablePagination
-                  defaultActivePage={1}
-                  totalPages={props.totalPages}
+                  totalPages={state.totalPages}
+                  activePage={state.activePage}
+                  onPageChange={handlePaginationChange}
                 ></TablePagination>
               </Segment>
             </Table.HeaderCell>
