@@ -3,6 +3,7 @@ import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleSummaryDto;
 import com.Vitalij.myPuzzleList.puzzle.model.puzzle.Puzzle;
 import com.Vitalij.myPuzzleList.puzzle.repository.PuzzleRepository;
 import com.Vitalij.myPuzzleList.puzzle.service.PuzzleService;
+import org.springframework.data.domain.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,9 +20,12 @@ public class PuzzleController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/getAll")
-    public List<PuzzleSummaryDto> show() {
-        return puzzleService.getPuzzleSummaries();
+    @GetMapping(value = "/getAll")
+    public Page<PuzzleSummaryDto> show(
+            @RequestParam(defaultValue = "0", name = "page") Integer pageNo
+    ) {
+        Pageable pageable = PageRequest.of(pageNo, 2, Sort.unsorted());
+        return puzzleService.getPuzzleSummaries(pageable);
     }
 
     //TODO Perrasyti su dto
