@@ -1,4 +1,5 @@
 package com.Vitalij.myPuzzleList.puzzle.controller;
+import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleDescriptionDto;
 import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleSummaryDto;
 import com.Vitalij.myPuzzleList.puzzle.model.puzzle.Puzzle;
 import com.Vitalij.myPuzzleList.puzzle.repository.PuzzleRepository;
@@ -7,6 +8,7 @@ import org.springframework.data.domain.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/puzzle/")
@@ -21,11 +23,22 @@ public class PuzzleController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/getAll")
-    public Page<PuzzleSummaryDto> show(
+    public Page<PuzzleSummaryDto> getAllPuzzleSummaries(
             @RequestParam(defaultValue = "0", name = "page") Integer pageNo
     ) {
         Pageable pageable = PageRequest.of(pageNo-1, 2, Sort.unsorted());
         return puzzleService.getPuzzleSummaries(pageable);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping(value = "/{id}")
+    public PuzzleDescriptionDto getPuzzleDescriptionByID(
+           @PathVariable UUID id
+    ) {
+        System.out.println(id + " - id");
+        PuzzleDescriptionDto puzzleDescriptionDto = puzzleService.getPuzzleDescription(id);
+        System.out.println(puzzleDescriptionDto.getId());
+        return puzzleDescriptionDto;
     }
 
     //TODO Perrasyti su dto
