@@ -5,6 +5,7 @@ import { Button } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 import './App.styles.css';
 import PuzzlesPage from '../PuzzlesPage/PuzzlesPage';
+import PuzzleDescriptionPage from '../PuzzleDescriptionPage';
 
 const isLogged: boolean = false;
 const username: string = 'Vitalij';
@@ -24,8 +25,8 @@ function App() {
         <Route path='/login'>
           <h2>Login page/modal </h2>
         </Route>
-        <Route path='/puzzle/:id'>
-          <h2>Specific puzzle</h2>
+        <Route path='/puzzle/:puzzleId'>
+          <PuzzleDescriptionPage />
         </Route>
         <Route path='/user/profile'>
           <h2>User profile</h2>

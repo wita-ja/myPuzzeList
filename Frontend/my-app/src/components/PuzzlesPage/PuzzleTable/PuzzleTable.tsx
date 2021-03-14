@@ -156,11 +156,11 @@ const PuzzleTable = () => {
                   <Image
                     alt={puzzle.title} //TODO probably need to change to proper one title != image name
                     src={puzzle.imagePath[0] || 'images/NoImageAvailable.jpg'}
-                    size='mini'
+                    size='tiny'
                     centered
                   ></Image>
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell width='6'>
                   <Header
                     as={Link}
                     to={`/puzzle/${puzzle.id}`}
@@ -170,7 +170,11 @@ const PuzzleTable = () => {
                     color='blue'
                   >
                     {puzzle.title}
-                    <Header.Subheader>{puzzle.description}</Header.Subheader>
+                    <Header.Subheader>
+                      {
+                        puzzle.description /* TODO Egle kaip slepia overflow characteriu */
+                      }
+                    </Header.Subheader>
                   </Header>
                 </Table.Cell>
                 <Table.Cell>{puzzle.difficulty}</Table.Cell>

@@ -70,7 +70,7 @@ public class PuzzleService {
                 .id(puzzle.getId())
                 .title(puzzle.getTitle())
                 .description(puzzle.getDescription())
-                .difficulty(puzzle.getDifficulty().getLevel() + " - " + puzzle.getDifficulty().getDisplayName())
+                .difficulty("Level " + puzzle.getDifficulty().getLevel() + " - " + puzzle.getDifficulty().getDisplayName())
                 .solutionId(puzzleSolutionId)
                 .type(puzzle.getType().getName())
                 .brand(puzzle.getBrand())
