@@ -24,9 +24,12 @@ public class PuzzleController {
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/getAll")
     public Page<PuzzleSummaryDto> getAllPuzzleSummaries(
-            @RequestParam(defaultValue = "0", name = "page") Integer pageNo
+            @RequestParam(defaultValue = "1", name = "page") Integer pageNo,
+            @RequestParam(defaultValue = "title", name = "sortBy") String sortBy,
+            @RequestParam(defaultValue =  "asc", name = "direction") String direction
     ) {
-        Pageable pageable = PageRequest.of(pageNo-1, 2, Sort.unsorted());
+        if (sortBy.equals("difficulty")) sortBy = "difficulty.displayName";
+        Pageable pageable = PageRequest.of(pageNo-1, 2, Sort.by(Sort.Direction.fromString(direction), sortBy));
         return puzzleService.getPuzzleSummaries(pageable);
     }
 

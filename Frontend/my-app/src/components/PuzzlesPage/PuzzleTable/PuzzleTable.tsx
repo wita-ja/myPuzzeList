@@ -172,7 +172,7 @@ const PuzzleTable = () => {
                     {puzzle.title}
                     <Header.Subheader>
                       {
-                        puzzle.description /* TODO Egle kaip slepia overflow characteriu */
+                        puzzle.description /* TODO Egle kaip slepia overflow characteriu (css text-overflow*/ 
                       }
                     </Header.Subheader>
                   </Header>
