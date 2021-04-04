@@ -1,6 +1,6 @@
 package com.Vitalij.myPuzzleList.puzzle.repository;
 
-import com.Vitalij.myPuzzleList.puzzle.model.puzzle.Puzzle;
+import com.Vitalij.myPuzzleList.puzzle.model.Puzzle;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

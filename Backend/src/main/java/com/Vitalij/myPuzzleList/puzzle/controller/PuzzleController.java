@@ -1,7 +1,7 @@
 package com.Vitalij.myPuzzleList.puzzle.controller;
 import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleDescriptionDto;
 import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleSummaryDto;
-import com.Vitalij.myPuzzleList.puzzle.model.puzzle.Puzzle;
+import com.Vitalij.myPuzzleList.puzzle.model.Puzzle;
 import com.Vitalij.myPuzzleList.puzzle.repository.PuzzleRepository;
 import com.Vitalij.myPuzzleList.puzzle.service.PuzzleService;
 import org.springframework.data.domain.*;

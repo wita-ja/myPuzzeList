@@ -2,9 +2,9 @@ package com.Vitalij.myPuzzleList.puzzle.service;
 
 import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleDescriptionDto;
 import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleSummaryDto;
-import com.Vitalij.myPuzzleList.puzzle.model.puzzle.Image;
-import com.Vitalij.myPuzzleList.puzzle.model.puzzle.Material;
-import com.Vitalij.myPuzzleList.puzzle.model.puzzle.Puzzle;
+import com.Vitalij.myPuzzleList.puzzle.model.Image;
+import com.Vitalij.myPuzzleList.puzzle.model.Material;
+import com.Vitalij.myPuzzleList.puzzle.model.Puzzle;
 import com.Vitalij.myPuzzleList.puzzle.repository.PuzzleRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
