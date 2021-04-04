@@ -1,4 +1,4 @@
-package com.Vitalij.myPuzzleList.puzzle.model.user;
+package com.Vitalij.myPuzzleList.puzzle.model;
 
 import java.util.Set;
 import  java.util.UUID;
@@ -17,8 +17,8 @@ import javax.persistence.*;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "ROLE")
-public class Role {
+@Table(name = "TYPE")
+public class Type {
 
     @Id
     @GeneratedValue
@@ -28,7 +28,7 @@ public class Role {
     @Column(name = "NAME", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "type", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
-    private Set<UserDetails> userDetails;
+    private Set<Puzzle> puzzles;
 }

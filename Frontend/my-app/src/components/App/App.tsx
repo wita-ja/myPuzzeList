@@ -6,9 +6,13 @@ import 'semantic-ui-css/semantic.min.css';
 import './App.styles.css';
 import PuzzlesPage from '../PuzzlesPage/PuzzlesPage';
 import PuzzleDescriptionPage from '../PuzzleDescriptionPage';
+import UserProfilePage from '../UserProfilePage';
+import TestingUsersUsername from '../../enums/TestingUsersUsername';
 
-const isLogged: boolean = false;
-const username: string = 'Vitalij';
+//after login set isLogged true and username
+//after logout set isLogged to false and username to ''
+const isLogged: boolean = true;
+let username: string = TestingUsersUsername.admin;
 
 //TODO add components to render into routes
 function App() {
@@ -28,8 +32,8 @@ function App() {
         <Route path='/puzzle/:puzzleId'>
           <PuzzleDescriptionPage />
         </Route>
-        <Route path='/user/profile'>
-          <h2>User profile</h2>
+        <Route path='/user/:username'>
+          <UserProfilePage />
         </Route>
         <Route path='/user/collection'>
           <h2>User collection</h2>

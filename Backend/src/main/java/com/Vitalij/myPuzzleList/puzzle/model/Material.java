@@ -1,7 +1,7 @@
-package com.Vitalij.myPuzzleList.puzzle.model.puzzle;
+package com.Vitalij.myPuzzleList.puzzle.model;
 
 import java.util.Set;
-import  java.util.UUID;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,8 +17,8 @@ import javax.persistence.*;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "TYPE")
-public class Type {
+@Table(name = "MATERIAL")
+public class Material {
 
     @Id
     @GeneratedValue
@@ -28,7 +28,6 @@ public class Type {
     @Column(name = "NAME", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "type", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "materials")
     private Set<Puzzle> puzzles;
 }

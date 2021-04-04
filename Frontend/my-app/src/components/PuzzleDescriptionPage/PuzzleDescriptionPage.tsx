@@ -42,9 +42,7 @@ function PuzzleDescriptionPage() {
     setIsLoading(loading);
   }, [data]);
 
-  if (isLoading) return <Loader active></Loader>;
-  //TODO Implement error page component
-  if (error) {
+  if ((error && isLoading) || error) {
     console.log(error.response?.data);
     return (
       <>
@@ -56,6 +54,8 @@ function PuzzleDescriptionPage() {
       </>
     );
   }
+  if (isLoading) return <Loader active></Loader>;
+  //TODO Implement error page component
   //TODO Egles uzklausti kaip padaryti grazu tarpa is dvieju pusiu
 
   return (

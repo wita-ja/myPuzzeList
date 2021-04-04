@@ -1,7 +1,7 @@
-package com.Vitalij.myPuzzleList.puzzle.model.puzzle;
+package com.Vitalij.myPuzzleList.puzzle.model;
 
 import java.util.Set;
-import java.util.UUID;
+import  java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,21 +17,18 @@ import javax.persistence.*;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "DIFFICULTY")
-public class Difficulty {
-
+@Table(name = "STATUS")
+public class Status {
     @Id
     @GeneratedValue
     @Column(name = "ID", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "LEVEL", nullable = false)
-    private Integer level;
+    @Column(name = "NAME", nullable = false)
+    private String name;
 
-    @Column(name = "DISPLAY_NAME", nullable = false)
-    private String displayName;
-
-    @OneToMany(mappedBy = "difficulty", fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "status", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
-    private Set<Puzzle> puzzles;
+    private Set<UserPuzzle> userPuzzles;
+
 }

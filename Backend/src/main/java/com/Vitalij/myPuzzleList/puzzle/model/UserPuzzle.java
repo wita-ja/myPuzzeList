@@ -1,6 +1,6 @@
-package com.Vitalij.myPuzzleList.puzzle.model.puzzle;
+package com.Vitalij.myPuzzleList.puzzle.model;
 
-import com.Vitalij.myPuzzleList.puzzle.model.user.UserDetails;
+import com.Vitalij.myPuzzleList.user.model.UserDetails;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
