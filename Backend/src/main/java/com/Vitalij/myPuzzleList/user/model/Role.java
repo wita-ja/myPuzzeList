@@ -1,4 +1,4 @@
-package com.Vitalij.myPuzzleList.user.model.user;
+package com.Vitalij.myPuzzleList.user.model;
 
 import java.util.Set;
 import  java.util.UUID;

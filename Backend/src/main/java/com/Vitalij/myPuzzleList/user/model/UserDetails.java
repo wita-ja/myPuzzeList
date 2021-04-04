@@ -1,4 +1,4 @@
-package com.Vitalij.myPuzzleList.user.model.user;
+package com.Vitalij.myPuzzleList.user.model;
 
 import com.Vitalij.myPuzzleList.puzzle.model.UserPuzzle;
 import lombok.AllArgsConstructor;

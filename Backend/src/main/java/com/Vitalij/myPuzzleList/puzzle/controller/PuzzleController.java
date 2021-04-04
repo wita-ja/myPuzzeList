@@ -6,8 +6,6 @@ import com.Vitalij.myPuzzleList.puzzle.repository.PuzzleRepository;
 import com.Vitalij.myPuzzleList.puzzle.service.PuzzleService;
 import org.springframework.data.domain.*;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -38,22 +36,13 @@ public class PuzzleController {
     public PuzzleDescriptionDto getPuzzleDescriptionByID(
            @PathVariable UUID id
     ) {
-        System.out.println(id + " - id");
-        PuzzleDescriptionDto puzzleDescriptionDto = puzzleService.getPuzzleDescription(id);
-        System.out.println(puzzleDescriptionDto.getId());
-        return puzzleDescriptionDto;
+        return puzzleService.getPuzzleDescription(id);
     }
 
     //TODO Perrasyti su dto
     @PostMapping("/saveOne")
     public Puzzle save(@RequestBody Puzzle puzzle) {
         return repository.save(puzzle);
-    }
-
-    //TODO Perrasyti su dto
-    @PostMapping("/saveMany")
-    public List<Puzzle> save(@RequestBody List<Puzzle> puzzles) {
-        return repository.saveAll(puzzles);
     }
 
 }
