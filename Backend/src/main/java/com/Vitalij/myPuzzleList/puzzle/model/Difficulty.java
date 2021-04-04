@@ -1,4 +1,4 @@
-package com.Vitalij.myPuzzleList.puzzle.model.puzzle;
+package com.Vitalij.myPuzzleList.puzzle.model;
 
 import java.util.Set;
 import java.util.UUID;
@@ -17,17 +17,21 @@ import javax.persistence.*;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "MATERIAL")
-public class Material {
+@Table(name = "DIFFICULTY")
+public class Difficulty {
 
     @Id
     @GeneratedValue
     @Column(name = "ID", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "NAME", nullable = false)
-    private String name;
+    @Column(name = "LEVEL", nullable = false)
+    private Integer level;
 
-    @ManyToMany(mappedBy = "materials")
+    @Column(name = "DISPLAY_NAME", nullable = false)
+    private String displayName;
+
+    @OneToMany(mappedBy = "difficulty", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
     private Set<Puzzle> puzzles;
 }

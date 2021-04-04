@@ -1,6 +1,6 @@
-package com.Vitalij.myPuzzleList.puzzle.model.user;
+package com.Vitalij.myPuzzleList.user.model.user;
 
-import com.Vitalij.myPuzzleList.puzzle.model.puzzle.UserPuzzle;
+import com.Vitalij.myPuzzleList.puzzle.model.UserPuzzle;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +9,6 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
@@ -35,7 +34,7 @@ public class UserDetails {
     @OneToMany(mappedBy = "userDetails")
     Set<UserPuzzle> userPuzzles;
 
-    @Column(name = "NAME", nullable = false)
+    @Column(name = "USERNAME", nullable = false, unique = true)
     private String username;
 
     @Column(name = "EMAIL", nullable = false, unique = true)
@@ -53,6 +52,6 @@ public class UserDetails {
     @Column(name = "ACTIVITY_POINTS", nullable = false)
     private Integer activityPoints;
 
-    @Column(name = "BIRTH_DATE", nullable = false)
-    private Date birthDate;
+    @Column(name = "AGE_GROUP", nullable = false)
+    private String age_group;
 }

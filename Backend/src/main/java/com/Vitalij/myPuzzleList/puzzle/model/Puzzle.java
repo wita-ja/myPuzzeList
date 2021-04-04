@@ -1,4 +1,4 @@
-package com.Vitalij.myPuzzleList.puzzle.model.puzzle;
+package com.Vitalij.myPuzzleList.puzzle.model;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
