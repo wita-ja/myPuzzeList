@@ -14,9 +14,6 @@ const NavigationBar = (props: NavigationBarProps) => {
       <Menu.Item as={Link} to='/'>
         Puzzles
       </Menu.Item>
-      <Menu.Item as={Link} to='/login'>
-        Login page(laterModal)
-      </Menu.Item>
       {props.isLogged && (
         <Menu.Item position='right'>
           <Dropdown text={props.username} pointing='top right'>
@@ -24,7 +21,7 @@ const NavigationBar = (props: NavigationBarProps) => {
               <Dropdown.Item as={Link} to='/user/collection'>
                 My collection
               </Dropdown.Item>
-              <Dropdown.Item as={Link} to='/user/profile'>
+              <Dropdown.Item as={Link} to={`/user/${props.username}`}>
                 My profile
               </Dropdown.Item>
               <Dropdown.Item
