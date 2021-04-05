@@ -76,7 +76,7 @@ const UserProfilePage = () => {
       <>
         <Grid padded='vertically' columns='2'>
           <Grid.Column width='6'>
-            <Header as={'h2'}>Profile Information</Header>
+            <Header as={'h2'}>{`${username} Profile Information`}</Header>
             <Grid padded='horizontally' columns='2'>
               {Object.keys(profileLabelValues).map(
                 (label: any, index: number) => {

@@ -8,7 +8,7 @@ const UserPuzzlesPage = (props: { username: string }) => {
     <>
       <Container>
         <div>
-          <Header as='h1'>{`${props.username} Puzzle Collection`}</Header>
+          <Header as='h1'>{`${username} Puzzle Collection`}</Header>
         </div>
         <UserPuzzlesTable username={username}></UserPuzzlesTable>
       </Container>
