@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserPuzzleRepository extends JpaRepository<UserPuzzle, UserPuzzleKey> {
     Page<UserPuzzle> findByUserDetails(UserDetails userDetails, Pageable pageable);
+
+    UserPuzzle findUserPuzzleById(UserPuzzleKey id);
 }
 
 
