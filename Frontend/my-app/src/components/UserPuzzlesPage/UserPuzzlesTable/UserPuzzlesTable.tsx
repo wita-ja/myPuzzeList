@@ -1,6 +1,7 @@
 import { AxiosError } from 'axios';
+import useAxios from 'axios-hooks';
 import _ from 'lodash';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Table,
@@ -10,6 +11,7 @@ import {
   Container,
   Loader,
   Button,
+  Icon,
 } from 'semantic-ui-react';
 import CollectionPuzzle from '../../../dataTypes/CollectionPuzzle';
 import TablePagination from '../../CommonComponents/TablePagination';
@@ -27,6 +29,43 @@ const UserPuzzlesTable = (props: { username: string }) => {
   });
 
   //TODO add puzzle fetch from api and use effect
+  const [{ data, loading, error }] = useAxios(
+    {
+      url: `http://localhost:8080/api/user/${props.username}/collection`,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
+      params: {
+        page: state.activePage,
+        sortBy: state.column,
+        direction: state.direction === 'ascending' ? 'asc' : 'desc',
+      },
+    },
+    { useCache: false }
+  );
+
+  useEffect(() => {
+    setState({
+      ...state,
+      loading: true,
+    });
+
+    if (data) {
+      setState({
+        ...state,
+        puzzles: data.content,
+        pageSize: data.pageable.pageSize,
+        totalPages: data.totalPages,
+        loading: loading,
+      });
+    } else {
+      setState({
+        ...state,
+        error: error,
+        loading: loading,
+      });
+    }
+  }, [data, loading, error]);
 
   const handleSort = (clickedColumn: string) => () => {
     if (state.column !== clickedColumn) {
@@ -116,7 +155,9 @@ const UserPuzzlesTable = (props: { username: string }) => {
             {state.puzzles.map((puzzle: CollectionPuzzle, index: number) => {
               return (
                 <Table.Row key={puzzle.id} textAlign='center'>
-                  <Table.Cell>{index + 1}</Table.Cell>
+                  <Table.Cell>
+                    {index + 2 * (state.activePage - 1) + 1}
+                  </Table.Cell>
                   <Table.Cell width='6'>
                     <Header
                       as={Link}
@@ -140,7 +181,13 @@ const UserPuzzlesTable = (props: { username: string }) => {
                     <Button
                       as={Link}
                       to={`/user/${props.username}/collection/${puzzle.id}`}
-                    ></Button>
+                      icon
+                      basic
+                    >
+                      <Button.Content visible>
+                        <Icon name='edit'></Icon>
+                      </Button.Content>
+                    </Button>
                   </Table.Cell>
                 </Table.Row>
               );
