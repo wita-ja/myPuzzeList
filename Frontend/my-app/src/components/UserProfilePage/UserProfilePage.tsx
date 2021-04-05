@@ -4,12 +4,13 @@ import { useParams } from 'react-router-dom';
 import { Container, Grid, Header, Loader } from 'semantic-ui-react';
 import UserDetails from '../../dataTypes/UserDetails';
 
-// fetch info from back
+//TODO fetch info from back
 interface RouteParams {
   username: string;
 }
 
-// display inside of container on the left
+//TODO display inside of container on the left
+//TODO basic info edit mode
 const UserProfilePage = () => {
   let { username } = useParams<RouteParams>();
 
@@ -22,6 +23,7 @@ const UserProfilePage = () => {
 
   const [state, setState] = useState(data as UserDetails);
   const [isLoading, setIsLoading] = useState(true);
+  //TODO Simonas
   const [profileLabelValues, setProfileLabelValues] = useState({
     Description: '',
     Role: '',
@@ -74,7 +76,7 @@ const UserProfilePage = () => {
       <>
         <Grid padded='vertically' columns='2'>
           <Grid.Column width='6'>
-            <Header as={'h2'}>Profile Information</Header>
+            <Header as={'h2'}>{`${username} Profile Information`}</Header>
             <Grid padded='horizontally' columns='2'>
               {Object.keys(profileLabelValues).map(
                 (label: any, index: number) => {
