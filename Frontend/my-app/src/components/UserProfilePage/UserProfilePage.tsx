@@ -4,12 +4,13 @@ import { useParams } from 'react-router-dom';
 import { Container, Grid, Header, Loader } from 'semantic-ui-react';
 import UserDetails from '../../dataTypes/UserDetails';
 
-// fetch info from back
+//TODO fetch info from back
 interface RouteParams {
   username: string;
 }
 
-// display inside of container on the left
+//TODO display inside of container on the left
+//TODO basic info edit mode
 const UserProfilePage = () => {
   let { username } = useParams<RouteParams>();
 

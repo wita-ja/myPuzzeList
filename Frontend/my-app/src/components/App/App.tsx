@@ -8,6 +8,7 @@ import PuzzlesPage from '../PuzzlesPage/PuzzlesPage';
 import PuzzleDescriptionPage from '../PuzzleDescriptionPage';
 import UserProfilePage from '../UserProfilePage';
 import TestingUsersUsername from '../../enums/TestingUsersUsername';
+import UserPuzzlesPage from '../UserPuzzlesPage';
 
 //after login set isLogged true and username
 //after logout set isLogged to false and username to ''
@@ -23,7 +24,7 @@ function App() {
         <Route exact path='/'>
           <PuzzlesPage />
         </Route>
-        <Route path='puzzles/:page'>
+        <Route path='/puzzles/:page'>
           <PuzzlesPage />
         </Route>
         <Route path='/login'>
@@ -32,11 +33,14 @@ function App() {
         <Route path='/puzzle/:puzzleId'>
           <PuzzleDescriptionPage />
         </Route>
+        <Route path='/user/:username/collection/:puzzleId'>
+          <div>Collection item editing</div>
+        </Route>
+        <Route path='/user/:username/collection'>
+          <UserPuzzlesPage username={username} />
+        </Route>
         <Route path='/user/:username'>
           <UserProfilePage />
-        </Route>
-        <Route path='/user/collection'>
-          <h2>User collection</h2>
         </Route>
         <Route path='*'>
           <h1>404 page not found</h1>

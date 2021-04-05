@@ -18,7 +18,10 @@ const NavigationBar = (props: NavigationBarProps) => {
         <Menu.Item position='right'>
           <Dropdown text={props.username} pointing='top right'>
             <Dropdown.Menu>
-              <Dropdown.Item as={Link} to='/user/collection'>
+              <Dropdown.Item
+                as={Link}
+                to={`/user/${props.username}/collection`}
+              >
                 My collection
               </Dropdown.Item>
               <Dropdown.Item as={Link} to={`/user/${props.username}`}>
