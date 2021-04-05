@@ -12,7 +12,5 @@ import java.util.UUID;
 public interface PuzzleRepository extends JpaRepository<Puzzle, UUID> {
 
     Page<Puzzle> findByApproved(boolean approved, Pageable pageable);
-
     Puzzle findPuzzleById(UUID id);
-
 }

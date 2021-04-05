@@ -3,5 +3,5 @@ export default interface CollectionPuzzle {
   title: string;
   description: string;
   status: string;
-  userScore: number | string;
+  userScore: number;
 }
