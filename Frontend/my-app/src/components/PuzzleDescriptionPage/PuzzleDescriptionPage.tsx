@@ -56,7 +56,6 @@ function PuzzleDescriptionPage() {
   }
   if (isLoading) return <Loader active></Loader>;
   //TODO Implement error page component
-  //TODO Egles uzklausti kaip padaryti grazu tarpa is dvieju pusiu
 
   return (
     <Container>

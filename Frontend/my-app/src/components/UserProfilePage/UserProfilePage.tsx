@@ -23,6 +23,7 @@ const UserProfilePage = () => {
 
   const [state, setState] = useState(data as UserDetails);
   const [isLoading, setIsLoading] = useState(true);
+  //TODO Simonas
   const [profileLabelValues, setProfileLabelValues] = useState({
     Description: '',
     Role: '',
