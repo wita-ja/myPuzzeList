@@ -1,5 +1,11 @@
 import React from 'react';
-import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Link,
+  Redirect,
+  Route,
+  Switch,
+} from 'react-router-dom';
 import GlobalHeader from '../GlobalHeader';
 import { Button } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
@@ -13,17 +19,14 @@ import UserPuzzlesPage from '../UserPuzzlesPage';
 //after login set isLogged true and username
 //after logout set isLogged to false and username to ''
 const isLogged: boolean = true;
-let username: string = TestingUsersUsername.admin;
+let username: string = 'Admin Testing';
 
-//TODO add components to render into routes
+//TODO patikrinti / ir redirect'a
 function App() {
   return (
     <Router>
       <GlobalHeader isLogged={isLogged} username={username}></GlobalHeader>
       <Switch>
-        <Route exact path='/'>
-          <PuzzlesPage />
-        </Route>
         <Route path='/puzzles/:page'>
           <PuzzlesPage />
         </Route>
@@ -31,16 +34,19 @@ function App() {
           <h2>Login page/modal </h2>
         </Route>
         <Route path='/puzzle/:puzzleId'>
-          <PuzzleDescriptionPage />
+          <PuzzleDescriptionPage username={username} isLogged={isLogged} />
+        </Route>
+        <Route path='/user/:username/collection/page/:page'>
+          <UserPuzzlesPage username={username} isLogged={isLogged} />
         </Route>
         <Route path='/user/:username/collection/:puzzleId'>
           <div>Collection item editing</div>
         </Route>
-        <Route path='/user/:username/collection'>
-          <UserPuzzlesPage username={username} />
-        </Route>
         <Route path='/user/:username'>
           <UserProfilePage />
+        </Route>
+        <Route exact path='/'>
+          <Redirect to={{ pathname: '/puzzles/1' }} />
         </Route>
         <Route path='*'>
           <h1>404 page not found</h1>

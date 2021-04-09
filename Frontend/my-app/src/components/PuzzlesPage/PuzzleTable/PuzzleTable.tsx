@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import {
   Table,
   Image,
@@ -17,7 +17,6 @@ import { AxiosError } from 'axios';
 import '../PuzzleTable/PuzzleTable.styles.css';
 
 //TODO Improve Table.footer to disable buttons, show next batch of puzzles
-//TODO See if it's posible to generate HeaderCells from enum
 const PuzzleTable = () => {
   const [state, setState] = useState({
     pageSize: 0,
@@ -67,6 +66,11 @@ const PuzzleTable = () => {
       });
     }
   }, [data, loading, error]);
+
+  let history = useHistory();
+  useEffect(() => {
+    history.push(`/puzzles/${state.activePage}`);
+  }, [state.activePage]);
 
   const handleSort = (clickedColumn: string) => () => {
     if (state.column !== clickedColumn) {

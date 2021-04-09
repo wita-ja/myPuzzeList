@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/user/")
 public class UserController {
@@ -42,5 +44,14 @@ public class UserController {
         else if (sortBy.equals("status")) sortBy = "status.name";
         Pageable pageable = PageRequest.of(pageNo-1, 2, Sort.by(Sort.Direction.fromString(direction), sortBy));
         return puzzleService.getUserCollectionPuzzles(username, pageable);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping(value = "/{username}/validate/collection/{puzzleId}")
+    public Boolean getUserCollectionDetails(
+            @PathVariable String username,
+            @PathVariable UUID puzzleId
+    ) {
+        return puzzleService.isPuzzlePresentInUserCollection(username, puzzleId);
     }
 }

@@ -20,7 +20,7 @@ const NavigationBar = (props: NavigationBarProps) => {
             <Dropdown.Menu>
               <Dropdown.Item
                 as={Link}
-                to={`/user/${props.username}/collection`}
+                to={`/user/${props.username}/collection/page/1`}
               >
                 My collection
               </Dropdown.Item>
