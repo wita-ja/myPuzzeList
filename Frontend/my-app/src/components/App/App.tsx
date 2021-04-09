@@ -19,7 +19,7 @@ import UserPuzzlesPage from '../UserPuzzlesPage';
 //after login set isLogged true and username
 //after logout set isLogged to false and username to ''
 const isLogged: boolean = true;
-let username: string = TestingUsersUsername.admin;
+let username: string = 'Admin Testing';
 
 //TODO patikrinti / ir redirect'a
 function App() {
@@ -34,10 +34,10 @@ function App() {
           <h2>Login page/modal </h2>
         </Route>
         <Route path='/puzzle/:puzzleId'>
-          <PuzzleDescriptionPage username={username} />
+          <PuzzleDescriptionPage username={username} isLogged={isLogged} />
         </Route>
         <Route path='/user/:username/collection/page/:page'>
-          <UserPuzzlesPage username={username} />
+          <UserPuzzlesPage username={username} isLogged={isLogged} />
         </Route>
         <Route path='/user/:username/collection/:puzzleId'>
           <div>Collection item editing</div>

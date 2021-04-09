@@ -269,7 +269,7 @@ const AddToCollectionModal = (props: AddToCollectionModalProps) => {
                 disabled={isSubmitDisabled.value}
                 onClick={handleSubmit}
               >
-                Add
+                Confirm
               </Button>
               <Button size='mini' onClick={onModalClose}>
                 Cancel

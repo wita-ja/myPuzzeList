@@ -22,7 +22,7 @@ interface ParamTypes {
   puzzleId: string;
 }
 
-function PuzzleDescriptionPage(props: { username: string }) {
+function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
   let { puzzleId } = useParams<ParamTypes>();
   const [
     { data: getPuzzleData, loading: getPuzzleLoading, error: getPuzzleError },
@@ -39,12 +39,16 @@ function PuzzleDescriptionPage(props: { username: string }) {
       loading: getListValidationLoading,
       error: getListValidationError,
     },
-  ] = useAxios({
-    url: `http://localhost:8080/api/user/${props.username}/validate/collection/${puzzleId}`,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
+    executeValidation,
+  ] = useAxios(
+    {
+      url: `http://localhost:8080/api/user/${props.username}/validate/collection/${puzzleId}`,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
     },
-  });
+    { manual: true }
+  );
 
   const [state, setState] = useState(getPuzzleData as PuzzleDescription);
   const [isLoading, setIsLoading] = useState(true);
@@ -74,11 +78,14 @@ function PuzzleDescriptionPage(props: { username: string }) {
   }, [showToast]);
 
   useEffect(() => {
-    setIsLoading(true);
-    if (getListValidationData) {
-      setAllowToAdd(getListValidationData);
-    }
-    setIsLoading(getListValidationLoading);
+    if (props.isLogged) {
+      executeValidation();
+      setIsLoading(true);
+      if (getListValidationData) {
+        setAllowToAdd(getListValidationData);
+      }
+      setIsLoading(getListValidationLoading);
+    } else setAllowToAdd(false);
   }, [getListValidationData]);
 
   const notify = () => {
@@ -154,19 +161,23 @@ function PuzzleDescriptionPage(props: { username: string }) {
                 <GridColumn>{state.material.join(', ')}</GridColumn>
               </Grid.Row>
               <Grid.Row>
-                {!allowToAdd ? (
-                  <AddToCollectionModal
-                    open={showModal}
-                    onOpen={() => setShowModal(true)}
-                    onClose={() => setShowModal(false)}
-                    onSuccess={() => setShowToast(true)}
-                    trigger={<Button>Add puzzle to your collection</Button>}
-                    puzzleId={puzzleId}
-                    userName={props.username}
-                    solutionUnlocked={isSolutionUnlocked}
-                  ></AddToCollectionModal>
-                ) : (
-                  <Button disabled>Already added to collection</Button>
+                {props.isLogged && (
+                  <>
+                    {allowToAdd ? (
+                      <AddToCollectionModal
+                        open={showModal}
+                        onOpen={() => setShowModal(true)}
+                        onClose={() => setShowModal(false)}
+                        onSuccess={() => setShowToast(true)}
+                        trigger={<Button>Add to collection</Button>}
+                        puzzleId={puzzleId}
+                        userName={props.username}
+                        solutionUnlocked={isSolutionUnlocked}
+                      ></AddToCollectionModal>
+                    ) : (
+                      <Button disabled>Already added to collection</Button>
+                    )}
+                  </>
                 )}
               </Grid.Row>
             </Grid>
@@ -177,11 +188,15 @@ function PuzzleDescriptionPage(props: { username: string }) {
           Puzzle description
         </Header>
         <p>{state.description}</p>
-        <Header as='h3' dividing>
-          Puzzle solution - TODO
-        </Header>
-        <p>You didn't buy this puzzle solution yet</p>
-        <Button>Buy puzzle solution</Button>
+        {props.isLogged && (
+          <>
+            <Header as='h3' dividing>
+              Puzzle solution - TODO
+            </Header>
+            <p>You didn't buy this puzzle solution yet</p>
+            <Button>Buy puzzle solution</Button>
+          </>
+        )}
       </>
     </Container>
   );
