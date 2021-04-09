@@ -2,7 +2,7 @@ import { AxiosError } from 'axios';
 import useAxios from 'axios-hooks';
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import {
   Table,
   Header,
@@ -66,6 +66,11 @@ const UserPuzzlesTable = (props: { username: string }) => {
       });
     }
   }, [data, loading, error]);
+
+  let history = useHistory();
+  useEffect(() => {
+    history.push(`/user/${props.username}/collection/page/${state.activePage}`);
+  }, [state.activePage]);
 
   const handleSort = (clickedColumn: string) => () => {
     if (state.column !== clickedColumn) {
