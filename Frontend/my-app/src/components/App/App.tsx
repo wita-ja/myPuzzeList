@@ -34,7 +34,7 @@ function App() {
           <h2>Login page/modal </h2>
         </Route>
         <Route path='/puzzle/:puzzleId'>
-          <PuzzleDescriptionPage />
+          <PuzzleDescriptionPage username={username} />
         </Route>
         <Route path='/user/:username/collection/page/:page'>
           <UserPuzzlesPage username={username} />

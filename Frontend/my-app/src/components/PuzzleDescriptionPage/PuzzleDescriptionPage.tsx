@@ -1,6 +1,8 @@
 import useAxios from 'axios-hooks';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   Grid,
   Segment,
@@ -14,12 +16,13 @@ import {
 } from 'semantic-ui-react';
 import PuzzleDescription from '../../dataTypes/PuzzleDescription';
 import '../PuzzleDescriptionPage/PuzzleDescriptionPage.styles.css';
+import AddToCollectionModal from './AddToCollectionModal';
 
 interface ParamTypes {
   puzzleId: string;
 }
 
-function PuzzleDescriptionPage() {
+function PuzzleDescriptionPage(props: { username: string }) {
   let { puzzleId } = useParams<ParamTypes>();
   const [{ data, loading, error }] = useAxios({
     url: `http://localhost:8080/api/puzzle/${puzzleId}`,
@@ -30,6 +33,11 @@ function PuzzleDescriptionPage() {
 
   const [state, setState] = useState(data as PuzzleDescription);
   const [isLoading, setIsLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  //TODO implement solution viewing
+  const [isSolutionUnlocked, setSolutionUnlocked] = useState(false);
+
   useEffect(() => {
     setIsLoading(true);
 
@@ -41,6 +49,20 @@ function PuzzleDescriptionPage() {
     }
     setIsLoading(loading);
   }, [data]);
+
+  useEffect(() => {
+    if (showToast === true) {
+      notify();
+      setTimeout(() => setShowToast(false), 3500);
+    }
+  }, [showToast]);
+
+  const notify = () => {
+    toast.success('Puzzle successfully added to your collection!', {
+      position: 'top-center',
+      autoClose: 3000,
+    });
+  };
 
   if ((error && isLoading) || error) {
     console.log(error.response?.data);
@@ -59,6 +81,7 @@ function PuzzleDescriptionPage() {
 
   return (
     <Container>
+      <ToastContainer position='top-center' autoClose={3000} />
       <>
         <Grid padded='vertically' columns='2'>
           <Grid.Column width='4'>
@@ -107,7 +130,16 @@ function PuzzleDescriptionPage() {
                 <GridColumn>{state.material.join(', ')}</GridColumn>
               </Grid.Row>
               <Grid.Row>
-                <Button>Add puzzle to your list //TODO</Button>
+                <AddToCollectionModal
+                  open={showModal}
+                  onOpen={() => setShowModal(true)}
+                  onClose={() => setShowModal(false)}
+                  onSuccess={() => setShowToast(true)}
+                  trigger={<Button>Add puzzle to your list</Button>}
+                  puzzleId={puzzleId}
+                  userName={props.username}
+                  solutionUnlocked={isSolutionUnlocked}
+                ></AddToCollectionModal>
               </Grid.Row>
             </Grid>
           </Grid.Column>
