@@ -24,31 +24,47 @@ interface ParamTypes {
 
 function PuzzleDescriptionPage(props: { username: string }) {
   let { puzzleId } = useParams<ParamTypes>();
-  const [{ data, loading, error }] = useAxios({
+  const [
+    { data: getPuzzleData, loading: getPuzzleLoading, error: getPuzzleError },
+  ] = useAxios({
     url: `http://localhost:8080/api/puzzle/${puzzleId}`,
     headers: {
       'Access-Control-Allow-Origin': '*',
     },
   });
 
-  const [state, setState] = useState(data as PuzzleDescription);
+  const [
+    {
+      data: getListValidationData,
+      loading: getListValidationLoading,
+      error: getListValidationError,
+    },
+  ] = useAxios({
+    url: `http://localhost:8080/api/user/${props.username}/validate/collection/${puzzleId}`,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
+  });
+
+  const [state, setState] = useState(getPuzzleData as PuzzleDescription);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [allowToAdd, setAllowToAdd] = useState(false);
   //TODO implement solution viewing
   const [isSolutionUnlocked, setSolutionUnlocked] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
 
-    if (data) {
+    if (getPuzzleData) {
       setState({
         ...state,
-        ...data,
+        ...getPuzzleData,
       });
     }
-    setIsLoading(loading);
-  }, [data]);
+    setIsLoading(getPuzzleLoading);
+  }, [getPuzzleData]);
 
   useEffect(() => {
     if (showToast === true) {
@@ -57,6 +73,14 @@ function PuzzleDescriptionPage(props: { username: string }) {
     }
   }, [showToast]);
 
+  useEffect(() => {
+    setIsLoading(true);
+    if (getListValidationData) {
+      setAllowToAdd(getListValidationData);
+    }
+    setIsLoading(getListValidationLoading);
+  }, [getListValidationData]);
+
   const notify = () => {
     toast.success('Puzzle successfully added to your collection!', {
       position: 'top-center',
@@ -64,15 +88,15 @@ function PuzzleDescriptionPage(props: { username: string }) {
     });
   };
 
-  if ((error && isLoading) || error) {
-    console.log(error.response?.data);
+  if ((getPuzzleError && isLoading) || getPuzzleError) {
+    console.log(getPuzzleError.response?.data);
     return (
       <>
         <Header
           textAlign='center'
           size='huge'
           color='red'
-        >{`${error.response?.data.error} \n ${error.response?.data.status}`}</Header>
+        >{`${getPuzzleError.response?.data.error} \n ${getPuzzleError.response?.data.status}`}</Header>
       </>
     );
   }
@@ -130,16 +154,20 @@ function PuzzleDescriptionPage(props: { username: string }) {
                 <GridColumn>{state.material.join(', ')}</GridColumn>
               </Grid.Row>
               <Grid.Row>
-                <AddToCollectionModal
-                  open={showModal}
-                  onOpen={() => setShowModal(true)}
-                  onClose={() => setShowModal(false)}
-                  onSuccess={() => setShowToast(true)}
-                  trigger={<Button>Add puzzle to your list</Button>}
-                  puzzleId={puzzleId}
-                  userName={props.username}
-                  solutionUnlocked={isSolutionUnlocked}
-                ></AddToCollectionModal>
+                {!allowToAdd ? (
+                  <AddToCollectionModal
+                    open={showModal}
+                    onOpen={() => setShowModal(true)}
+                    onClose={() => setShowModal(false)}
+                    onSuccess={() => setShowToast(true)}
+                    trigger={<Button>Add puzzle to your collection</Button>}
+                    puzzleId={puzzleId}
+                    userName={props.username}
+                    solutionUnlocked={isSolutionUnlocked}
+                  ></AddToCollectionModal>
+                ) : (
+                  <Button disabled>Already added to collection</Button>
+                )}
               </Grid.Row>
             </Grid>
           </Grid.Column>

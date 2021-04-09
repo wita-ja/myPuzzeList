@@ -100,6 +100,19 @@ public class PuzzleService {
         return new ResponseEntity<>("Puzzle was succesfully added", HttpStatus.CREATED);
     }
 
+    public Boolean isPuzzlePresentInUserCollection(String username, UUID puzzleId) {
+
+        UserDetails userDetails = userRepository.findUserDetailsByUsername(username);
+        UserPuzzleKey userPuzzleId = new UserPuzzleKey(userDetails.getId(), puzzleId);
+        try {
+           UserPuzzle userPuzzle = userPuzzleRepository.findUserPuzzleById(userPuzzleId);
+            System.out.println("id: " + puzzleId + ' ' + "puzzleId: " + userPuzzle.getPuzzle().getId());
+            return userPuzzle.getPuzzle().getId().equals(puzzleId);
+        } catch (Exception e) {
+          return false;
+        }
+    }
+
     private PuzzleSummaryDto mapToPuzzleSummaryDto (Puzzle puzzle) {
         return PuzzleSummaryDto.builder()
                 .id(puzzle.getId())
