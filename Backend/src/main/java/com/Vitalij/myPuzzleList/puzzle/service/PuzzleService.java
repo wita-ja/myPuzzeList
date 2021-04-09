@@ -1,9 +1,6 @@
 package com.Vitalij.myPuzzleList.puzzle.service;
 
-import com.Vitalij.myPuzzleList.puzzle.dto.CollectionPuzzleDto;
-import com.Vitalij.myPuzzleList.puzzle.dto.CollectionPuzzleRequestBodyDto;
-import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleDescriptionDto;
-import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleSummaryDto;
+import com.Vitalij.myPuzzleList.puzzle.dto.*;
 import com.Vitalij.myPuzzleList.puzzle.model.*;
 import com.Vitalij.myPuzzleList.puzzle.repository.PuzzleRepository;
 import com.Vitalij.myPuzzleList.puzzle.repository.StatusRepository;
@@ -14,10 +11,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import static java.util.Objects.isNull;
@@ -59,6 +58,11 @@ public class PuzzleService {
         return mapToPuzzleDescriptionDto(puzzle);
     }
 
+    public List<PuzzleStatusDto> getPuzzleStatuses() {
+        List<Status> statuses = statusRepository.findAll(Sort.unsorted());
+        return  statuses.stream().map(this::mapToPuzzleStatuDto).collect(Collectors.toList());
+    }
+
     public Page<CollectionPuzzleDto> getUserCollectionPuzzles(String username, Pageable pageable) {
         UserDetails userDetails = userRepository.findUserDetailsByUsername(username);
         Page<UserPuzzle> userPuzzles = userPuzzleRepository.findByUserDetails(userDetails, pageable);
@@ -85,7 +89,7 @@ public class PuzzleService {
            UserPuzzleKey userPuzzleId = new UserPuzzleKey(userDetails.getId(), puzzleId);
            if (!isNull(userPuzzleRepository.findUserPuzzleById(userPuzzleId))){
                return new ResponseEntity<>("User collection already contains this puzzle", HttpStatus.CONFLICT);
-           };
+           }
 
            UserPuzzle userPuzzleToAdd = mapToUserPuzzle(puzzle, userDetails, status, requestBody);
            userPuzzleRepository.save(userPuzzleToAdd);
@@ -157,5 +161,11 @@ public class PuzzleService {
                 .score(score)
                 .solutionUnlocked(requestBody.getSolutionUnlocked())
                 .build();
+    }
+
+    private PuzzleStatusDto mapToPuzzleStatuDto (Status status) {
+         return PuzzleStatusDto.builder()
+                 .status(status.getName())
+                 .build();
     }
 }

@@ -1,12 +1,16 @@
 package com.Vitalij.myPuzzleList.puzzle.controller;
 import com.Vitalij.myPuzzleList.puzzle.dto.CollectionPuzzleRequestBodyDto;
 import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleDescriptionDto;
+import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleStatusDto;
 import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleSummaryDto;
+import com.Vitalij.myPuzzleList.puzzle.model.Puzzle;
 import com.Vitalij.myPuzzleList.puzzle.service.PuzzleService;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
@@ -51,5 +55,12 @@ public class PuzzleController {
         } else if (isNull(puzzleService.getPuzzleById(puzzleId))) {
             return new ResponseEntity<>("Puzzle doesn't exist", HttpStatus.NOT_FOUND);
         } else return puzzleService.addPuzzleToUserCollection(requestBody, puzzleId);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping(value = "/getStatuses")
+    public List<PuzzleStatusDto> getPuzzleStatuses(
+    ) {
+        return puzzleService.getPuzzleStatuses();
     }
 }
