@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserPuzzleRepository extends JpaRepository<UserPuzzle, UserPuzzleKey> {
-    Page<UserPuzzle> findByUserDetailsAndDeleted(UserDetails userDetails, Boolean deleted, Pageable pageable);
+    Page<UserPuzzle> findByUserDetailsAndDeleted (UserDetails userDetails, Boolean deleted, Pageable pageable);
 
     UserPuzzle findUserPuzzleById(UserPuzzleKey id);
 }

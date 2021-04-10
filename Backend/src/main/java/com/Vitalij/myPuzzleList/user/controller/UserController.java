@@ -43,11 +43,11 @@ public class UserController {
             @PathVariable String username,
             @RequestParam(defaultValue = "1", name = "page") Integer pageNo,
             @RequestParam(defaultValue = "title", name = "sortBy") String sortBy,
-            @RequestParam(defaultValue =  "asc", name = "direction") String direction
+            @RequestParam(defaultValue = "asc", name = "direction") String direction
     ) {
         if (sortBy.equals("title")) sortBy = "puzzle.title";
         else if (sortBy.equals("status")) sortBy = "status.name";
-        Pageable pageable = PageRequest.of(pageNo-1, 2, Sort.by(Sort.Direction.fromString(direction), sortBy));
+        Pageable pageable = PageRequest.of(pageNo - 1, 2, Sort.by(Sort.Direction.fromString(direction), sortBy));
         return puzzleService.getUserCollectionPuzzles(username, pageable);
     }
 
@@ -64,7 +64,7 @@ public class UserController {
     @PostMapping("/{username}/collection/add/{puzzleId}")
     public ResponseEntity<Object> savePuzzleToCollection(@RequestBody CollectionPuzzleRequestBodyDto requestBody, @PathVariable UUID puzzleId) {
 
-        if(isNull(requestBody.getStatus())) {
+        if (isNull(requestBody.getStatus())) {
             return new ResponseEntity<>("Status is required", HttpStatus.BAD_REQUEST);
         } else if (isNull(requestBody.getUsername())) {
             return new ResponseEntity<>("Username is required", HttpStatus.BAD_REQUEST);

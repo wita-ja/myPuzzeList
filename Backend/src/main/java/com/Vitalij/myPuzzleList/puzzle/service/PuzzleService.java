@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import static java.util.Objects.isNull;
 
 @Service
@@ -40,8 +41,8 @@ public class PuzzleService {
         this.statusRepository = statusRepository;
     }
 
-    public Puzzle getPuzzleById (UUID puzzleId) {
-        return  puzzleRepository.findPuzzleById(puzzleId);
+    public Puzzle getPuzzleById(UUID puzzleId) {
+        return puzzleRepository.findPuzzleById(puzzleId);
     }
 
     public Page<PuzzleSummaryDto> getPuzzleSummaries(Pageable pageable) {
@@ -61,7 +62,7 @@ public class PuzzleService {
 
     public List<PuzzleStatusDto> getPuzzleStatuses() {
         List<Status> statuses = statusRepository.findAll(Sort.unsorted());
-        return  statuses.stream().map(this::mapToPuzzleStatusDto).collect(Collectors.toList());
+        return statuses.stream().map(this::mapToPuzzleStatusDto).collect(Collectors.toList());
     }
 
     public Page<CollectionPuzzleDto> getUserCollectionPuzzles(String username, Pageable pageable) {
@@ -72,7 +73,7 @@ public class PuzzleService {
                 userPuzzles.getTotalElements());
     }
 
-    public ResponseEntity<Object> addUserPuzzleCollection(CollectionPuzzleRequestBodyDto requestBody, UUID puzzleId){
+    public ResponseEntity<Object> addUserPuzzleCollection(CollectionPuzzleRequestBodyDto requestBody, UUID puzzleId) {
         try {
             UserDetails userDetails = userRepository.findUserDetailsByUsername(requestBody.getUsername());
             Puzzle puzzle = puzzleRepository.findPuzzleById(puzzleId);
@@ -80,7 +81,7 @@ public class PuzzleService {
 
             UserPuzzleKey userPuzzleId = new UserPuzzleKey(userDetails.getId(), puzzleId);
             UserPuzzle validationUserPuzzle = userPuzzleRepository.findUserPuzzleById(userPuzzleId);
-            if (!isNull(validationUserPuzzle) && !validationUserPuzzle.getDeleted()){
+            if (!isNull(validationUserPuzzle) && !validationUserPuzzle.getDeleted()) {
                 return new ResponseEntity<>("User collection already contains this puzzle", HttpStatus.CONFLICT);
             } else {
                 UserPuzzle userPuzzleToAdd = mapToUserPuzzle(puzzle, userDetails, status, requestBody, false);
@@ -94,7 +95,7 @@ public class PuzzleService {
         }
     }
 
-    public ResponseEntity<Object> updateUserPuzzleDetails(CollectionPuzzleRequestBodyDto requestBody, UUID puzzleId){
+    public ResponseEntity<Object> updateUserPuzzleDetails(CollectionPuzzleRequestBodyDto requestBody, UUID puzzleId) {
         try {
             UserDetails userDetails = userRepository.findUserDetailsByUsername(requestBody.getUsername());
             Puzzle puzzle = puzzleRepository.findPuzzleById(puzzleId);
@@ -149,7 +150,7 @@ public class PuzzleService {
         }
     }
 
-    private PuzzleSummaryDto mapToPuzzleSummaryDto (Puzzle puzzle) {
+    private PuzzleSummaryDto mapToPuzzleSummaryDto(Puzzle puzzle) {
         return PuzzleSummaryDto.builder()
                 .id(puzzle.getId())
                 .title(puzzle.getTitle())
@@ -160,7 +161,7 @@ public class PuzzleService {
                 .build();
     }
 
-    private PuzzleDescriptionDto mapToPuzzleDescriptionDto (Puzzle puzzle) {
+    private PuzzleDescriptionDto mapToPuzzleDescriptionDto(Puzzle puzzle) {
         UUID puzzleSolutionId;
         // handlinu null'a jeigu puzzle neturi solutiono (expected result)
         try {
@@ -169,7 +170,7 @@ public class PuzzleService {
             puzzleSolutionId = null;
         }
 
-        return  PuzzleDescriptionDto.builder()
+        return PuzzleDescriptionDto.builder()
                 .id(puzzle.getId())
                 .title(puzzle.getTitle())
                 .description(puzzle.getDescription())
@@ -183,7 +184,7 @@ public class PuzzleService {
                 .build();
     }
 
-    private CollectionPuzzleDto mapToCollectionPuzzleDto (UserPuzzle userPuzzle) {
+    private CollectionPuzzleDto mapToCollectionPuzzleDto(UserPuzzle userPuzzle) {
         return CollectionPuzzleDto.builder()
                 .id(userPuzzle.getPuzzle().getId())
                 .title(userPuzzle.getPuzzle().getTitle())
@@ -193,7 +194,7 @@ public class PuzzleService {
                 .build();
     }
 
-    private CollectionPuzzleRequestBodyDto mapToCollectionPuzzleRequestBodydto (UserPuzzle userPuzzle, String username) {
+    private CollectionPuzzleRequestBodyDto mapToCollectionPuzzleRequestBodydto(UserPuzzle userPuzzle, String username) {
         return CollectionPuzzleRequestBodyDto.builder()
                 .username(username)
                 .status(userPuzzle.getStatus().getName())
@@ -202,11 +203,11 @@ public class PuzzleService {
                 .build();
     }
 
-    private UserPuzzle mapToUserPuzzle (Puzzle puzzle, UserDetails userDetails, Status status, CollectionPuzzleRequestBodyDto requestBody, Boolean deleted) {
+    private UserPuzzle mapToUserPuzzle(Puzzle puzzle, UserDetails userDetails, Status status, CollectionPuzzleRequestBodyDto requestBody, Boolean deleted) {
         UserPuzzleKey userPuzzleId = new UserPuzzleKey(userDetails.getId(), puzzle.getId());
 
         Integer score;
-        if(requestBody.getScore() == null) {
+        if (requestBody.getScore() == null) {
             try {
                 score = userPuzzleRepository.findUserPuzzleById(userPuzzleId).getScore();
             } catch (DataAccessException e) {
@@ -222,7 +223,7 @@ public class PuzzleService {
         }
 
         Boolean solutionUnlocked;
-        if(requestBody.getSolutionUnlocked() == null) {
+        if (requestBody.getSolutionUnlocked() == null) {
             try {
                 solutionUnlocked = userPuzzleRepository.findUserPuzzleById(userPuzzleId).getSolutionUnlocked();
             } catch (DataAccessException e) {
@@ -233,7 +234,7 @@ public class PuzzleService {
         } else solutionUnlocked = requestBody.getSolutionUnlocked();
 
         Status finalStatus;
-        if(isNull(status) ) {
+        if (isNull(status)) {
             try {
                 finalStatus = userPuzzleRepository.findUserPuzzleById(userPuzzleId).getStatus();
             } catch (DataAccessException e) {

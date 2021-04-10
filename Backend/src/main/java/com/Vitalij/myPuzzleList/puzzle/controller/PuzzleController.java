@@ -1,4 +1,5 @@
 package com.Vitalij.myPuzzleList.puzzle.controller;
+
 import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleDescriptionDto;
 import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleStatusDto;
 import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleSummaryDto;
@@ -23,17 +24,17 @@ public class PuzzleController {
     public Page<PuzzleSummaryDto> getAllPuzzleSummaries(
             @RequestParam(defaultValue = "1", name = "page") Integer pageNo,
             @RequestParam(defaultValue = "title", name = "sortBy") String sortBy,
-            @RequestParam(defaultValue =  "asc", name = "direction") String direction
+            @RequestParam(defaultValue = "asc", name = "direction") String direction
     ) {
         if (sortBy.equals("difficulty")) sortBy = "difficulty.displayName";
-        Pageable pageable = PageRequest.of(pageNo-1, 2, Sort.by(Sort.Direction.fromString(direction), sortBy));
+        Pageable pageable = PageRequest.of(pageNo - 1, 2, Sort.by(Sort.Direction.fromString(direction), sortBy));
         return puzzleService.getPuzzleSummaries(pageable);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/{id}")
     public PuzzleDescriptionDto getPuzzleDescriptionByID(
-           @PathVariable UUID id
+            @PathVariable UUID id
     ) {
         return puzzleService.getPuzzleDescription(id);
     }
