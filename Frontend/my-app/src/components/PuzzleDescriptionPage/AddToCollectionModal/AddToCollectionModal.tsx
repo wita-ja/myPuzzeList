@@ -44,7 +44,7 @@ const AddToCollectionModal = (props: AddToCollectionModalProps) => {
     executePost,
   ] = useAxios(
     {
-      url: `http://localhost:8080/api/puzzle/add/${props.puzzleId}`,
+      url: `http://localhost:8080/api/user/collection/add/${props.puzzleId}`,
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -264,15 +264,15 @@ const AddToCollectionModal = (props: AddToCollectionModalProps) => {
               )
             }
             <GridRow key={'modal_submitButtons'} centered>
+              <Button size='mini' onClick={onModalClose}>
+                Cancel
+              </Button>
               <Button
                 size='mini'
                 disabled={isSubmitDisabled.value}
                 onClick={handleSubmit}
               >
-                Confirm
-              </Button>
-              <Button size='mini' onClick={onModalClose}>
-                Cancel
+                Submit
               </Button>
             </GridRow>
           </Grid>

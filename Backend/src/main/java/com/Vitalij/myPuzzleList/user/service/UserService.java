@@ -19,7 +19,7 @@ public class UserService {
     }
 
     private UserDetailsDto mapToUserDetailsDto(UserDetails userDetails) {
-        return  UserDetailsDto.builder()
+        return UserDetailsDto.builder()
                 .username(userDetails.getUsername())
                 .description(userDetails.getDescription())
                 .dateCreated(userDetails.getDate_created().toString())

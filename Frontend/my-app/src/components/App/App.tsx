@@ -19,7 +19,7 @@ import UserPuzzlesPage from '../UserPuzzlesPage';
 //after login set isLogged true and username
 //after logout set isLogged to false and username to ''
 const isLogged: boolean = true;
-let username: string = 'Admin Testing';
+let username: string = TestingUsersUsername.admin;
 
 //TODO patikrinti / ir redirect'a
 function App() {

@@ -12,11 +12,17 @@ import {
   Loader,
   Button,
   Icon,
+  ButtonProps,
 } from 'semantic-ui-react';
 import CollectionPuzzle from '../../../dataTypes/CollectionPuzzle';
 import TablePagination from '../../CommonComponents/TablePagination';
+import EditCollectionModal from '../EditCollectionModal';
 
-const UserPuzzlesTable = (props: { username: string }) => {
+const UserPuzzlesTable = (props: {
+  username: string;
+  enableUpdateToast: () => void;
+  enableDeleteToast: () => void;
+}) => {
   const [state, setState] = useState({
     pageSize: 0,
     totalPages: 0,
@@ -28,8 +34,10 @@ const UserPuzzlesTable = (props: { username: string }) => {
     error: undefined as AxiosError<any> | undefined, // see if needed
   });
 
-  //TODO add puzzle fetch from api and use effect
-  const [{ data, loading, error }] = useAxios(
+  const [showModal, setShowModal] = useState(false);
+  const [editedPuzzle, setEditedPuzzle] = useState('');
+
+  const [{ data, loading, error }, refetch] = useAxios(
     {
       url: `http://localhost:8080/api/user/${props.username}/collection`,
       headers: {
@@ -71,6 +79,13 @@ const UserPuzzlesTable = (props: { username: string }) => {
   useEffect(() => {
     history.push(`/user/${props.username}/collection/page/${state.activePage}`);
   }, [state.activePage]);
+
+  //Used to refetch table data
+  useEffect(() => {
+    if (!showModal) {
+      refetch();
+    }
+  }, [showModal]);
 
   const handleSort = (clickedColumn: string) => () => {
     if (state.column !== clickedColumn) {
@@ -180,19 +195,46 @@ const UserPuzzlesTable = (props: { username: string }) => {
                       </Header.Subheader>
                     </Header>
                   </Table.Cell>
-                  <Table.Cell>{puzzle.userScore || 'N/A'}</Table.Cell>
-                  <Table.Cell>{puzzle.status || 'N/A'}</Table.Cell>
-                  <Table.Cell>
-                    <Button
-                      as={Link}
-                      to={`/user/${props.username}/collection/${puzzle.id}`}
-                      icon
-                      basic
-                    >
-                      <Button.Content visible>
-                        <Icon name='edit'></Icon>
-                      </Button.Content>
-                    </Button>
+                  <Table.Cell width='4'>{puzzle.userScore || 'N/A'}</Table.Cell>
+                  <Table.Cell width='4'>{puzzle.status || 'N/A'}</Table.Cell>
+                  <Table.Cell width='4' collapsing>
+                    <EditCollectionModal
+                      open={showModal}
+                      onOpen={() => setShowModal(true)}
+                      onClose={() => {
+                        setEditedPuzzle('');
+                        setShowModal(false);
+                      }}
+                      onUpdateToast={() => {
+                        setEditedPuzzle('');
+                        props.enableUpdateToast();
+                      }}
+                      onDeleteToast={() => {
+                        setEditedPuzzle('');
+                        props.enableDeleteToast();
+                      }}
+                      trigger={
+                        <Button
+                          icon
+                          basic
+                          compact
+                          value={puzzle.id}
+                          onClick={(
+                            event: React.MouseEvent,
+                            data: ButtonProps
+                          ) => {
+                            //@ts-ignore
+                            setEditedPuzzle(data.value);
+                          }}
+                        >
+                          <Button.Content visible>
+                            <Icon name='edit'></Icon>
+                          </Button.Content>
+                        </Button>
+                      }
+                      puzzleId={editedPuzzle}
+                      username={props.username}
+                    ></EditCollectionModal>
                   </Table.Cell>
                 </Table.Row>
               );
