@@ -66,7 +66,7 @@ public class PuzzleService {
 
     public Page<CollectionPuzzleDto> getUserCollectionPuzzles(String username, Pageable pageable) {
         UserDetails userDetails = userRepository.findUserDetailsByUsername(username);
-        Page<UserPuzzle> userPuzzles = userPuzzleRepository.findByUserDetails(userDetails, pageable);
+        Page<UserPuzzle> userPuzzles = userPuzzleRepository.findByUserDetailsAndDeleted(userDetails, false, pageable);
         return new PageImpl<>(userPuzzles.stream().map(this::mapToCollectionPuzzleDto).collect(Collectors.toList()),
                 userPuzzles.getPageable(),
                 userPuzzles.getTotalElements());

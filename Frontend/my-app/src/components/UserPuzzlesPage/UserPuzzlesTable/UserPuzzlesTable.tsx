@@ -3,7 +3,7 @@ import useAxios from 'axios-hooks';
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import {
   Table,
   Header,
@@ -19,7 +19,11 @@ import CollectionPuzzle from '../../../dataTypes/CollectionPuzzle';
 import TablePagination from '../../CommonComponents/TablePagination';
 import EditCollectionModal from '../EditCollectionModal';
 
-const UserPuzzlesTable = (props: { username: string }) => {
+const UserPuzzlesTable = (props: {
+  username: string;
+  enableUpdateToast: () => void;
+  enableDeleteToast: () => void;
+}) => {
   const [state, setState] = useState({
     pageSize: 0,
     totalPages: 0,
@@ -32,18 +36,10 @@ const UserPuzzlesTable = (props: { username: string }) => {
   });
 
   const [showModal, setShowModal] = useState(false);
-  const [showToast, setShowToast] = useState(false);
   const [editedPuzzle, setEditedPuzzle] = useState('');
 
-  useEffect(() => {
-    if (showToast === true) {
-      notify();
-      setTimeout(() => setShowToast(false), 3500);
-    }
-  }, [showToast]);
-
   //TODO add puzzle fetch from api and use effect
-  const [{ data, loading, error }] = useAxios(
+  const [{ data, loading, error }, refetch] = useAxios(
     {
       url: `http://localhost:8080/api/user/${props.username}/collection`,
       headers: {
@@ -86,6 +82,11 @@ const UserPuzzlesTable = (props: { username: string }) => {
     history.push(`/user/${props.username}/collection/page/${state.activePage}`);
   }, [state.activePage]);
 
+  useEffect(() => {
+    if (!showModal) {
+      refetch();
+    }
+  }, [showModal]);
   //Used to await editedPuzzle value to change
   /* useEffect(() => {
     setTimeout(() => {
@@ -119,13 +120,6 @@ const UserPuzzlesTable = (props: { username: string }) => {
     setState({ ...state, activePage: pageInfo.activePage as number });
   };
 
-  const notify = () => {
-    toast.success('Puzzle information was updated!', {
-      position: 'top-center',
-      autoClose: 3000,
-    });
-  };
-
   if (state.error) {
     console.log(state.error.response?.data);
     return (
@@ -146,124 +140,132 @@ const UserPuzzlesTable = (props: { username: string }) => {
           <Loader active className='loader_table'></Loader>
         </Container>
       ) : (
-        <Table celled sortable>
-          <Table.Header>
-            <Table.Row textAlign='center'>
-              <Table.HeaderCell>No</Table.HeaderCell>
-              <Table.HeaderCell
-                sorted={
-                  state.column === 'title'
-                    ? (state.direction as 'ascending' | 'descending') //TODO Simonas
-                    : undefined
-                }
-                onClick={handleSort('title')}
-              >
-                Title
-              </Table.HeaderCell>
-              <Table.HeaderCell
-                sorted={
-                  state.column === 'score'
-                    ? (state.direction as 'ascending' | 'descending')
-                    : undefined
-                }
-                onClick={handleSort('score')}
-              >
-                Score
-              </Table.HeaderCell>
-              <Table.HeaderCell
-                sorted={
-                  state.column === 'status'
-                    ? (state.direction as 'ascending' | 'descending')
-                    : undefined
-                }
-                onClick={handleSort('avgSstatuscore')}
-              >
-                Status
-              </Table.HeaderCell>
-              <Table.HeaderCell></Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
+        <>
+          <Table celled sortable>
+            <Table.Header>
+              <Table.Row textAlign='center'>
+                <Table.HeaderCell>No</Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={
+                    state.column === 'title'
+                      ? (state.direction as 'ascending' | 'descending') //TODO Simonas
+                      : undefined
+                  }
+                  onClick={handleSort('title')}
+                >
+                  Title
+                </Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={
+                    state.column === 'score'
+                      ? (state.direction as 'ascending' | 'descending')
+                      : undefined
+                  }
+                  onClick={handleSort('score')}
+                >
+                  Score
+                </Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={
+                    state.column === 'status'
+                      ? (state.direction as 'ascending' | 'descending')
+                      : undefined
+                  }
+                  onClick={handleSort('avgSstatuscore')}
+                >
+                  Status
+                </Table.HeaderCell>
+                <Table.HeaderCell></Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
 
-          <Table.Body>
-            {state.puzzles.map((puzzle: CollectionPuzzle, index: number) => {
-              return (
-                <Table.Row key={puzzle.id} textAlign='center'>
-                  <Table.Cell>
-                    {index + 2 * (state.activePage - 1) + 1}
-                  </Table.Cell>
-                  <Table.Cell width='6'>
-                    <Header
-                      as={Link}
-                      to={`/puzzle/${puzzle.id}`}
-                      floated='left'
-                      textAlign='left'
-                      size='small'
-                      color='blue'
-                    >
-                      {puzzle.title}
-                      <Header.Subheader>
-                        {
-                          puzzle.description /* TODO Egle kaip slepia overflow characteriu (css text-overflow*/
+            <Table.Body>
+              {state.puzzles.map((puzzle: CollectionPuzzle, index: number) => {
+                return (
+                  <Table.Row key={puzzle.id} textAlign='center'>
+                    <Table.Cell>
+                      {index + 2 * (state.activePage - 1) + 1}
+                    </Table.Cell>
+                    <Table.Cell width='6'>
+                      <Header
+                        as={Link}
+                        to={`/puzzle/${puzzle.id}`}
+                        floated='left'
+                        textAlign='left'
+                        size='small'
+                        color='blue'
+                      >
+                        {puzzle.title}
+                        <Header.Subheader>
+                          {
+                            puzzle.description /* TODO Egle kaip slepia overflow characteriu (css text-overflow*/
+                          }
+                        </Header.Subheader>
+                      </Header>
+                    </Table.Cell>
+                    <Table.Cell width='4'>
+                      {puzzle.userScore || 'N/A'}
+                    </Table.Cell>
+                    <Table.Cell width='4'>{puzzle.status || 'N/A'}</Table.Cell>
+                    <Table.Cell width='4' collapsing>
+                      <EditCollectionModal
+                        open={showModal}
+                        onOpen={() => setShowModal(true)}
+                        onClose={() => {
+                          setEditedPuzzle('');
+                          setShowModal(false);
+                        }}
+                        onUpdateToast={() => {
+                          setEditedPuzzle('');
+                          props.enableUpdateToast();
+                        }}
+                        onDeleteToast={() => {
+                          setEditedPuzzle('');
+                          props.enableDeleteToast();
+                        }}
+                        trigger={
+                          <Button
+                            icon
+                            basic
+                            compact
+                            value={puzzle.id}
+                            onClick={(
+                              event: React.MouseEvent,
+                              data: ButtonProps
+                            ) => {
+                              //@ts-ignore
+                              setEditedPuzzle(data.value);
+                            }}
+                          >
+                            <Button.Content visible>
+                              <Icon name='edit'></Icon>
+                            </Button.Content>
+                          </Button>
                         }
-                      </Header.Subheader>
-                    </Header>
-                  </Table.Cell>
-                  <Table.Cell width='4'>{puzzle.userScore || 'N/A'}</Table.Cell>
-                  <Table.Cell width='4'>{puzzle.status || 'N/A'}</Table.Cell>
-                  <Table.Cell width='4' collapsing>
-                    <EditCollectionModal
-                      open={showModal}
-                      onOpen={() => setShowModal(true)}
-                      onClose={() => {
-                        setEditedPuzzle('');
-                        setShowModal(false);
-                      }}
-                      onSuccess={() => {
-                        setEditedPuzzle('');
-                        setShowToast(true);
-                      }}
-                      trigger={
-                        <Button
-                          icon
-                          basic
-                          compact
-                          value={puzzle.id}
-                          onClick={(
-                            event: React.MouseEvent,
-                            data: ButtonProps
-                          ) => {
-                            //@ts-ignore
-                            setEditedPuzzle(data.value);
-                          }}
-                        >
-                          <Button.Content visible>
-                            <Icon name='edit'></Icon>
-                          </Button.Content>
-                        </Button>
-                      }
-                      puzzleId={editedPuzzle}
-                      userName={props.username}
-                    ></EditCollectionModal>
-                  </Table.Cell>
-                </Table.Row>
-              );
-            })}
-          </Table.Body>
+                        puzzleId={editedPuzzle}
+                        username={props.username}
+                      ></EditCollectionModal>
+                    </Table.Cell>
+                  </Table.Row>
+                );
+              })}
+            </Table.Body>
 
-          <Table.Footer>
-            <Table.Row>
-              <Table.HeaderCell colSpan='5'>
-                <Segment textAlign='center' basic>
-                  <TablePagination
-                    totalPages={state.totalPages}
-                    activePage={state.activePage}
-                    onPageChange={handlePaginationChange}
-                  ></TablePagination>
-                </Segment>
-              </Table.HeaderCell>
-            </Table.Row>
-          </Table.Footer>
-        </Table>
+            <Table.Footer>
+              <Table.Row>
+                <Table.HeaderCell colSpan='5'>
+                  <Segment textAlign='center' basic>
+                    <TablePagination
+                      totalPages={state.totalPages}
+                      activePage={state.activePage}
+                      onPageChange={handlePaginationChange}
+                    ></TablePagination>
+                  </Segment>
+                </Table.HeaderCell>
+              </Table.Row>
+            </Table.Footer>
+          </Table>
+        </>
       )}
     </>
   );

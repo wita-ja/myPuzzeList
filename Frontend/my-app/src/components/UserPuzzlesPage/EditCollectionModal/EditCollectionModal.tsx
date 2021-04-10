@@ -16,21 +16,30 @@ import {
   Modal,
 } from 'semantic-ui-react';
 import CollectionPuzzleStatus from '../../../dataTypes/CollectionPuzzleStatus';
+import CollectionPuzzleDto from '../../../dataTypes/postDtoTypes/CollectionPuzzleDto';
 import { PuzzleScores } from '../../../enums/PuzzleScores';
 import './EditCollectionModal.styles.css';
 
 interface EditCollectionModalProps {
   onClose: () => void;
   onOpen: () => void;
-  onSuccess: () => void;
+  onUpdateToast: () => void;
+  onDeleteToast: () => void;
   open: boolean;
   trigger: {};
   puzzleId: string;
-  userName: string;
+  username: string;
 }
 
 const EditCollectionModal = (props: EditCollectionModalProps) => {
-  const { onClose, onOpen, onSuccess, open, trigger } = props;
+  const {
+    onClose,
+    onOpen,
+    onUpdateToast,
+    onDeleteToast,
+    open,
+    trigger,
+  } = props;
 
   const [{ data: getData, loading: getLoading, error: getError }] = useAxios({
     url: 'http://localhost:8080/api/puzzle/getStatuses',
@@ -39,20 +48,50 @@ const EditCollectionModal = (props: EditCollectionModalProps) => {
     },
   });
 
-  //TODO pakeisti i put
-  /*  const [
-    { data: postData, loading: postLoading, error: postError },
-    executePost,
+  const [
+    {
+      data: getUserPuzzleData,
+      loading: getUserPuzzleLoading,
+      error: getUserPuzzleError,
+    },
+  ] = useAxios({
+    url: `http://localhost:8080/api/user/${props.username}/collection/${props.puzzleId}`,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
+  });
+
+  const [
+    { data: putData, loading: putLoading, error: putError },
+    executePut,
   ] = useAxios(
     {
-      url: `http://localhost:8080/api/puzzle/add/${props.puzzleId}`,
-      method: 'POST',
+      url: `http://localhost:8080/api/user/${props.username}/collection/edit/${props.puzzleId}`,
+      method: 'PUT',
       headers: {
         'Access-Control-Allow-Origin': '*',
       },
     },
     { manual: true }
-  ); */
+  );
+
+  const [
+    {
+      data: deletePuzzleData,
+      loading: deletePuzzleLoading,
+      error: deletePuzzleError,
+    },
+    executeDelete,
+  ] = useAxios(
+    {
+      url: `http://localhost:8080/api/user/${props.username}/collection/delete/${props.puzzleId}`,
+      method: 'DELETE',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
+    },
+    { manual: true }
+  );
 
   const [scoreInputValue, setScoreInputValue] = useState('');
   const [statusInputValue, setStatusInputValue] = useState('');
@@ -86,26 +125,38 @@ const EditCollectionModal = (props: EditCollectionModalProps) => {
   }, [getData, getLoading, getError]);
 
   // TODO update to putError
-  /*  useEffect(() => {
-    setPutErrorMessage(postError?.response?.data);
-  }, [postError]); */
+  useEffect(() => {
+    setPutErrorMessage(putError?.response?.data);
+  }, [putError]);
+
+  useEffect(() => {
+    if (getUserPuzzleData) {
+      Object.values(PuzzleScores).forEach((el) => {
+        if (+el.slice(0, 2).trim() === getUserPuzzleData.score) {
+          setScoreInputValue(el);
+        }
+      });
+      setStatusInputValue(getUserPuzzleData.status);
+    }
+
+    setTimeout(() => {
+      return;
+    }, 250);
+  }, [getUserPuzzleData]);
 
   const handleSubmit = async (event: React.MouseEvent) => {
     event.preventDefault();
-    const response = { status: 200 };
-    /*   TODO update to putError
-    const response = await executePost({
+    const response = await executePut({
       data: {
-        username: props.userName,
+        username: props.username,
         status: statusInputValue,
         //@ts-ignore
         score: scoreInputValue.slice(0, 2).trim() as number,
-        solutionUnlocked: props.solutionUnlocked,
       } as CollectionPuzzleDto,
-    }); 
- */
+    });
+
     if (response.status === 200) {
-      onSuccess();
+      onUpdateToast();
       onModalClose();
     }
   };
@@ -138,7 +189,9 @@ const EditCollectionModal = (props: EditCollectionModalProps) => {
     data: ConfirmProps
   ): void => {
     console.log(`Deleted puzzle: ${props.puzzleId}`);
-    //TODO update with manual api call
+    executeDelete();
+    onDeleteToast();
+    onModalClose();
   };
 
   const onModalOpen = () => {
@@ -182,6 +235,7 @@ const EditCollectionModal = (props: EditCollectionModalProps) => {
                 loading={statuses.loading}
                 value={statusInputValue}
                 text={statusInputValue}
+                defaultValue={statusInputValue}
               >
                 <Dropdown.Menu>
                   {statuses.puzzleStatuses.map(
@@ -211,6 +265,7 @@ const EditCollectionModal = (props: EditCollectionModalProps) => {
                 placeholder='Select score'
                 value={scoreInputValue}
                 text={scoreInputValue}
+                defaultValue={scoreInputValue}
               >
                 <Dropdown.Menu>
                   {Object.values(PuzzleScores).map((score) => {
@@ -230,15 +285,15 @@ const EditCollectionModal = (props: EditCollectionModalProps) => {
           {
             //TODO error handling component
             //@ts-ignore
-            /* (postErrorMessage?.error === 'Internal Server Error' ||
-                //@ts-ignore
-                postErrorMessage?.error === 'Bad Request') && (
-                <Container textAlign='center'>
-                  <Header as='h5' className='error'>
-                    {postError?.response?.data.error}
-                  </Header>
-                </Container>
-              ) */
+            (putErrorMessage?.error === 'Internal Server Error' ||
+              //@ts-ignore
+              putErrorMessage?.error === 'Bad Request') && (
+              <Container textAlign='center'>
+                <Header as='h5' className='error'>
+                  {putError?.response?.data.error}
+                </Header>
+              </Container>
+            )
           }
           <GridRow key={'modal_submitButtons'}>
             <Grid.Column width='3' floated='right'>
