@@ -1,0 +1,8 @@
+.ui.modal > .content {
+  text-align: center;
+}
+
+.ui.modal > .actions {
+  display: flex;
+  justify-content: center;
+}

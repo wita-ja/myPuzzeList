@@ -3,6 +3,7 @@ import useAxios from 'axios-hooks';
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import {
   Table,
   Header,
@@ -12,9 +13,11 @@ import {
   Loader,
   Button,
   Icon,
+  ButtonProps,
 } from 'semantic-ui-react';
 import CollectionPuzzle from '../../../dataTypes/CollectionPuzzle';
 import TablePagination from '../../CommonComponents/TablePagination';
+import EditCollectionModal from '../EditCollectionModal';
 
 const UserPuzzlesTable = (props: { username: string }) => {
   const [state, setState] = useState({
@@ -27,6 +30,17 @@ const UserPuzzlesTable = (props: { username: string }) => {
     loading: false as boolean,
     error: undefined as AxiosError<any> | undefined, // see if needed
   });
+
+  const [showModal, setShowModal] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [editedPuzzle, setEditedPuzzle] = useState('');
+
+  useEffect(() => {
+    if (showToast === true) {
+      notify();
+      setTimeout(() => setShowToast(false), 3500);
+    }
+  }, [showToast]);
 
   //TODO add puzzle fetch from api and use effect
   const [{ data, loading, error }] = useAxios(
@@ -72,6 +86,13 @@ const UserPuzzlesTable = (props: { username: string }) => {
     history.push(`/user/${props.username}/collection/page/${state.activePage}`);
   }, [state.activePage]);
 
+  //Used to await editedPuzzle value to change
+  /* useEffect(() => {
+    setTimeout(() => {
+      return null;
+    }, 1000);
+  }, [editedPuzzle]); */
+
   const handleSort = (clickedColumn: string) => () => {
     if (state.column !== clickedColumn) {
       setState({
@@ -96,6 +117,13 @@ const UserPuzzlesTable = (props: { username: string }) => {
     pageInfo: PaginationProps
   ) => {
     setState({ ...state, activePage: pageInfo.activePage as number });
+  };
+
+  const notify = () => {
+    toast.success('Puzzle information was updated!', {
+      position: 'top-center',
+      autoClose: 3000,
+    });
   };
 
   if (state.error) {
@@ -180,19 +208,42 @@ const UserPuzzlesTable = (props: { username: string }) => {
                       </Header.Subheader>
                     </Header>
                   </Table.Cell>
-                  <Table.Cell>{puzzle.userScore || 'N/A'}</Table.Cell>
-                  <Table.Cell>{puzzle.status || 'N/A'}</Table.Cell>
-                  <Table.Cell>
-                    <Button
-                      as={Link}
-                      to={`/user/${props.username}/collection/${puzzle.id}`}
-                      icon
-                      basic
-                    >
-                      <Button.Content visible>
-                        <Icon name='edit'></Icon>
-                      </Button.Content>
-                    </Button>
+                  <Table.Cell width='4'>{puzzle.userScore || 'N/A'}</Table.Cell>
+                  <Table.Cell width='4'>{puzzle.status || 'N/A'}</Table.Cell>
+                  <Table.Cell width='4' collapsing>
+                    <EditCollectionModal
+                      open={showModal}
+                      onOpen={() => setShowModal(true)}
+                      onClose={() => {
+                        setEditedPuzzle('');
+                        setShowModal(false);
+                      }}
+                      onSuccess={() => {
+                        setEditedPuzzle('');
+                        setShowToast(true);
+                      }}
+                      trigger={
+                        <Button
+                          icon
+                          basic
+                          compact
+                          value={puzzle.id}
+                          onClick={(
+                            event: React.MouseEvent,
+                            data: ButtonProps
+                          ) => {
+                            //@ts-ignore
+                            setEditedPuzzle(data.value);
+                          }}
+                        >
+                          <Button.Content visible>
+                            <Icon name='edit'></Icon>
+                          </Button.Content>
+                        </Button>
+                      }
+                      puzzleId={editedPuzzle}
+                      userName={props.username}
+                    ></EditCollectionModal>
                   </Table.Cell>
                 </Table.Row>
               );
