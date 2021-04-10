@@ -1,16 +1,14 @@
 package com.Vitalij.myPuzzleList.puzzle.model;
 
 import com.Vitalij.myPuzzleList.user.model.UserDetails;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@Setter
 @ToString
 @SuperBuilder
 @NoArgsConstructor
@@ -37,6 +35,9 @@ public class UserPuzzle {
     @Column(name = "SCORE")
     private Integer score;
 
-    @Column(name = "SOLUTION_UNLOCKED", nullable = false)
+    @Column(name = "SOLUTION_UNLOCKED")
     private Boolean solutionUnlocked;
+
+    @Column(name = "DELETED", nullable = false)
+    private Boolean deleted;
 }

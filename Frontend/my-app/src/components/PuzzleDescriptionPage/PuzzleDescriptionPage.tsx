@@ -78,7 +78,7 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
   }, [showToast]);
 
   useEffect(() => {
-    if (props.isLogged) {
+    if (props.isLogged && !getPuzzleLoading) {
       executeValidation();
       setIsLoading(true);
       if (getListValidationData) {
@@ -86,7 +86,7 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
       }
       setIsLoading(getListValidationLoading);
     } else setAllowToAdd(false);
-  }, [getListValidationData]);
+  }, [getPuzzleLoading]);
 
   const notify = () => {
     toast.success('Puzzle successfully added to your collection!', {
