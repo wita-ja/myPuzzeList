@@ -120,7 +120,7 @@ public class PuzzleService {
         try {
             UserPuzzle userPuzzle = userPuzzleRepository.findUserPuzzleById(userPuzzleId);
             System.out.println("id: " + puzzleId + ' ' + "puzzleId: " + userPuzzle.getPuzzle().getId());
-            return userPuzzle.getPuzzle().getId().equals(puzzleId);
+            return userPuzzle.getPuzzle().getId().equals(puzzleId) && !userPuzzle.getDeleted();
         } catch (Exception e) {
             return false;
         }

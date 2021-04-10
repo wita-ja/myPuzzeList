@@ -5,7 +5,6 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   Grid,
-  Segment,
   Image,
   Divider,
   Header,
@@ -54,7 +53,7 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [allowToAdd, setAllowToAdd] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
   //TODO implement solution viewing
   const [isSolutionUnlocked, setSolutionUnlocked] = useState(false);
 
@@ -78,15 +77,17 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
   }, [showToast]);
 
   useEffect(() => {
-    if (props.isLogged && !getPuzzleLoading) {
+    if (props.isLogged) {
       executeValidation();
+
       setIsLoading(true);
-      if (getListValidationData) {
-        setAllowToAdd(getListValidationData);
-      }
-      setIsLoading(getListValidationLoading);
-    } else setAllowToAdd(false);
-  }, [getPuzzleLoading]);
+      setIsAdded(getListValidationData);
+
+      setTimeout(() => {
+        setIsLoading(getListValidationLoading);
+      }, 500);
+    }
+  }, [getListValidationData]);
 
   const notify = () => {
     toast.success('Puzzle successfully added to your collection!', {
@@ -163,7 +164,9 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
               <Grid.Row>
                 {props.isLogged && (
                   <>
-                    {allowToAdd ? (
+                    {isAdded ? (
+                      <Button disabled>Already added to collection</Button>
+                    ) : (
                       <AddToCollectionModal
                         open={showModal}
                         onOpen={() => setShowModal(true)}
@@ -174,8 +177,6 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
                         userName={props.username}
                         solutionUnlocked={isSolutionUnlocked}
                       ></AddToCollectionModal>
-                    ) : (
-                      <Button disabled>Already added to collection</Button>
                     )}
                   </>
                 )}
