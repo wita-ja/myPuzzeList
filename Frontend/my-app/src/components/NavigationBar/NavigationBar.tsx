@@ -5,15 +5,22 @@ import { Menu, Dropdown, Button } from 'semantic-ui-react';
 interface NavigationBarProps {
   isLogged: boolean;
   username: string;
+  userRole: string;
 }
 
 const NavigationBar = (props: NavigationBarProps) => {
   const [isLogged, setLogged] = useState(props.isLogged);
+
   return (
     <Menu color='grey' fluid>
       <Menu.Item as={Link} to='/'>
         Puzzles
       </Menu.Item>
+      {props.userRole == 'Admin' && (
+        <Menu.Item as={Link} to='/submittedPuzzles/1'>
+          Submitted Puzzles
+        </Menu.Item>
+      )}
       {props.isLogged && (
         <Menu.Item position='right'>
           <Dropdown text={props.username} pointing='top right'>

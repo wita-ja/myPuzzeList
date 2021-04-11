@@ -7,6 +7,7 @@ import './GlobalHeader.styles.css';
 interface GlobalHeaderProps {
   isLogged: boolean;
   username: string;
+  userRole: string;
 }
 
 const GlobalHeader = (props: GlobalHeaderProps) => {
@@ -19,6 +20,7 @@ const GlobalHeader = (props: GlobalHeaderProps) => {
       <NavigationBar
         isLogged={props.isLogged}
         username={props.username}
+        userRole={props.userRole}
       ></NavigationBar>
     </Segment>
   );
