@@ -14,6 +14,7 @@ import {
   Confirm,
   ConfirmProps,
 } from 'semantic-ui-react';
+import SubmittedPuzzleVisibility from '../../dataTypes/postDtoTypes/SubmittedPuzzleVisibilityDto';
 import SubmittedPuzzle from '../../dataTypes/SubmittedPuzzle';
 
 interface ParamTypes {
@@ -34,6 +35,20 @@ export const SubmittedPuzzleDescriptionPage = (props: {
       'Access-Control-Allow-Origin': '*',
     },
   });
+
+  const [
+    { data: putData, loading: putLoading, error: putError },
+    executePut,
+  ] = useAxios(
+    {
+      url: `http://localhost:8080/api/puzzle/submitted/${puzzleId}/changeVisibility`,
+      method: 'PUT',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
+    },
+    { manual: true }
+  );
 
   const [state, setState] = useState(getPuzzleData as SubmittedPuzzle);
   const [isLoading, setIsLoading] = useState(true);
@@ -80,22 +95,38 @@ export const SubmittedPuzzleDescriptionPage = (props: {
     });
   };
 
-  const handlePuzzleApprove = (
+  const handlePuzzleApprove = async (
     event: React.MouseEvent<HTMLAnchorElement>,
     data: ConfirmProps
   ) => {
-    // some api shit
-    setShowApproveToast(true);
-    setShowApproveConfirm(false);
+    const response = await executePut({
+      data: {
+        approved: true,
+        rejected: false,
+      } as SubmittedPuzzleVisibility,
+    });
+
+    if (response.status === 200) {
+      setShowApproveToast(true);
+      setShowApproveConfirm(false);
+    }
   };
 
-  const handlePuzzleReject = (
+  const handlePuzzleReject = async (
     event: React.MouseEvent<HTMLAnchorElement>,
     data: ConfirmProps
   ) => {
-    // some api shit
-    setShowRejectToast(true);
-    setShowRejectConfirm(false);
+    const response = await executePut({
+      data: {
+        approved: false,
+        rejected: true,
+      } as SubmittedPuzzleVisibility,
+    });
+    console.log(response);
+    if (response.status === 200) {
+      setShowRejectToast(true);
+      setShowRejectConfirm(false);
+    }
   };
 
   if ((getPuzzleError && isLoading) || getPuzzleError) {

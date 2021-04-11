@@ -127,6 +127,20 @@ public class PuzzleService {
         }
     }
 
+    public ResponseEntity<Object> updateSubmittedPuzzleVisibility(SubmittedPuzzleVisibilityRequestBodyDto requestBody, UUID puzzleId) {
+        try {
+            Puzzle puzzle = puzzleRepository.findPuzzleById(puzzleId);
+
+            Puzzle puzzleToUpdate = mapToPuzzle(puzzle, requestBody);
+            puzzleRepository.save(puzzleToUpdate);
+            return new ResponseEntity<>("Puzzle was successfully updated", HttpStatus.OK);
+
+        } catch (DataAccessException e) {
+            System.out.println("Error response \n" + e.getMessage());
+            return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public Boolean isPuzzlePresentInUserCollection(String username, UUID puzzleId) {
 
         UserDetails userDetails = userRepository.findUserDetailsByUsername(username);
@@ -156,7 +170,7 @@ public class PuzzleService {
             UserPuzzle userPuzzle = userPuzzleRepository.findUserPuzzleById(userPuzzleId);
             userPuzzle.setDeleted(true);
             userPuzzleRepository.save(userPuzzle);
-            return new ResponseEntity<>("Puzzle was succesfully deleted", HttpStatus.OK);
+            return new ResponseEntity<>("Puzzle was successfully deleted", HttpStatus.OK);
         } catch (Exception e) {
             System.out.println("Error response \n" + Arrays.toString(e.getStackTrace()));
             return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -282,6 +296,34 @@ public class PuzzleService {
                 .solutionUnlocked(solutionUnlocked)
                 .deleted(deleted)
                 .build();
+    }
+
+    private Puzzle mapToPuzzle(Puzzle puzzle, SubmittedPuzzleVisibilityRequestBodyDto requestBody) {
+
+        Boolean approved;
+        if(requestBody.getApproved() == null) {
+            approved = false;
+        } else approved = requestBody.getApproved();
+
+        Boolean rejected;
+        if(requestBody.getRejected() == null) {
+            rejected = false;
+        } else rejected = requestBody.getRejected();
+
+        return Puzzle.builder()
+                .id(puzzle.getId())
+                .title(puzzle.getTitle())
+                .description(puzzle.getDescription())
+                .type(puzzle.getType())
+                .difficulty(puzzle.getDifficulty())
+                .brand(puzzle.getBrand())
+                .materials(puzzle.getMaterials())
+                .puzzleImages(puzzle.getPuzzleImages())
+                .solution(puzzle.getSolution())
+                .approved(approved)
+                .rejected(rejected)
+                .build();
+
     }
 
     private PuzzleStatusDto mapToPuzzleStatusDto(Status status) {

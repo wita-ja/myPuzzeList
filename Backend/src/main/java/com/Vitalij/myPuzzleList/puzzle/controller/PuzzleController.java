@@ -1,15 +1,16 @@
 package com.Vitalij.myPuzzleList.puzzle.controller;
 
-import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleDescriptionDto;
-import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleStatusDto;
-import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleSummaryDto;
-import com.Vitalij.myPuzzleList.puzzle.dto.SubmittedPuzzleDto;
+import com.Vitalij.myPuzzleList.puzzle.dto.*;
 import com.Vitalij.myPuzzleList.puzzle.service.PuzzleService;
 import org.springframework.data.domain.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+
+import static java.util.Objects.isNull;
 
 @RestController
 @RequestMapping("/api/puzzle/")
@@ -66,5 +67,15 @@ public class PuzzleController {
         if (sortBy.equals("difficulty")) sortBy = "difficulty.displayName";
         Pageable pageable = PageRequest.of(pageNo - 1, 2, Sort.by(Sort.Direction.fromString(direction), sortBy));
         return puzzleService.getSubmittedPuzzleSummaries(pageable);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/submitted/{puzzleId}/changeVisibility")
+    public ResponseEntity<Object> updateSubmittedPuzzleVisibility(@RequestBody SubmittedPuzzleVisibilityRequestBodyDto requestBody, @PathVariable UUID puzzleId) {
+
+        if(isNull(requestBody.getApproved()) && isNull(requestBody.getRejected())) {
+            return new ResponseEntity<>("RequestBody cannot be empty",HttpStatus.BAD_REQUEST);
+        } else
+        return puzzleService.updateSubmittedPuzzleVisibility(requestBody, puzzleId);
     }
 }
