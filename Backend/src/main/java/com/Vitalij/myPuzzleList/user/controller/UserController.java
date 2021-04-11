@@ -37,6 +37,7 @@ public class UserController {
         return userService.getUserDetails(username);
     }
 
+    //TODO change size to 25
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/{username}/collection")
     public Page<CollectionPuzzleDto> getUserCollectionDetails(
