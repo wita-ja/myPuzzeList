@@ -16,6 +16,7 @@ import UserProfilePage from '../UserProfilePage';
 import TestingUsersUsername from '../../enums/TestingUsersUsername';
 import UserPuzzlesPage from '../UserPuzzlesPage';
 import SubmittedPuzzlePage from '../SubmittedPuzzlesPage';
+import SubmittedPuzzleDescriptionPage from '../SubmittedPuzzleDescriptionPage';
 
 //after login set isLogged true and username
 //after logout set isLogged to false and username to ''
@@ -46,7 +47,7 @@ function App() {
           <PuzzleDescriptionPage username={username} isLogged={isLogged} />
         </Route>
         <Route path='/submittedPuzzle/:puzzleId'>
-          <PuzzleDescriptionPage username={username} isLogged={isLogged} />
+          <SubmittedPuzzleDescriptionPage isLogged={isLogged} />
         </Route>
         <Route path='/user/:username/collection/page/:page'>
           <UserPuzzlesPage username={username} isLogged={isLogged} />

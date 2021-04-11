@@ -186,6 +186,7 @@ const SubmittedPuzzleTable = () => {
                       <Table.Cell>
                         <Checkbox
                           defaultChecked={submittedPuzzle.rejected}
+                          disabled={true}
                         ></Checkbox>
                       </Table.Cell>
                     </Table.Row>

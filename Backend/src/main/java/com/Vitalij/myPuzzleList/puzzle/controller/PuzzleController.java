@@ -41,6 +41,14 @@ public class PuzzleController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping(value = "/submitted/{id}")
+    public SubmittedPuzzleDto getSubmittedPuzzleDescriptionByID(
+            @PathVariable UUID id
+    ) {
+        return puzzleService.getSubmittedPuzzleDescription(id);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/getStatuses")
     public List<PuzzleStatusDto> getPuzzleStatuses(
     ) {

@@ -65,8 +65,12 @@ public class PuzzleService {
 
     public PuzzleDescriptionDto getPuzzleDescription(UUID id) {
         Puzzle puzzle = puzzleRepository.findPuzzleById(id);
-        System.out.println(puzzle.getId());
         return mapToPuzzleDescriptionDto(puzzle);
+    }
+
+    public SubmittedPuzzleDto getSubmittedPuzzleDescription(UUID id) {
+        Puzzle puzzle = puzzleRepository.findPuzzleById(id);
+        return mapToSubmittedPuzzleDto(puzzle);
     }
 
     public List<PuzzleStatusDto> getPuzzleStatuses() {
@@ -176,7 +180,7 @@ public class PuzzleService {
                 .id(puzzle.getId())
                 .title(puzzle.getTitle())
                 .description(puzzle.getDescription())
-                .difficulty(puzzle.getDifficulty().getDisplayName())
+                .difficulty("Level " + puzzle.getDifficulty().getLevel() + " - " + puzzle.getDifficulty().getDisplayName())
                 .type(puzzle.getType().getName())
                 .brand(puzzle.getBrand())
                 .imagePath(puzzle.getPuzzleImages().stream().map(Image::getPath).collect(Collectors.toList()))
