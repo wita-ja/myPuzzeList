@@ -24,7 +24,7 @@ const SubmittedPuzzleTable = () => {
     pageSize: 0,
     totalPages: 0,
     activePage: 1,
-    column: 'title', // kurio column headeri spaude
+    column: 'rejected', // kurio column headeri spaude
     submittedPuzzles: [] as SubmittedPuzzle[],
     direction: 'ascending',
     loading: false as boolean,
@@ -126,6 +126,7 @@ const SubmittedPuzzleTable = () => {
           <Table celled sortable>
             <Table.Header>
               <Table.Row textAlign='center'>
+                <Table.HeaderCell>Image</Table.HeaderCell>
                 <Table.HeaderCell
                   sorted={
                     state.column === 'title'
@@ -136,7 +137,6 @@ const SubmittedPuzzleTable = () => {
                 >
                   Title
                 </Table.HeaderCell>
-                <Table.HeaderCell>Approved</Table.HeaderCell>
                 <Table.HeaderCell
                   sorted={
                     state.column === 'rejected'
@@ -155,44 +155,33 @@ const SubmittedPuzzleTable = () => {
                 (submittedPuzzle: SubmittedPuzzle) => {
                   return (
                     <Table.Row key={submittedPuzzle.id} textAlign='center'>
-                      <Table.Cell width='6'>
-                        <Grid columns='2'>
-                          <GridRow>
-                            <GridColumn width='4'>
-                              <Image
-                                alt={submittedPuzzle.title}
-                                src={
-                                  submittedPuzzle.imagePath[0] ||
-                                  'images/NoImageAvailable.jpg'
-                                }
-                                size='tiny'
-                                centered
-                              ></Image>
-                            </GridColumn>
-                            <GridColumn verticalAlign='middle' floated='left'>
-                              <Header
-                                as={Link}
-                                to={`/submittedPuzzle/${submittedPuzzle.id}`}
-                                floated='left'
-                                textAlign='left'
-                                size='small'
-                                color='blue'
-                              >
-                                {submittedPuzzle.title}
-                                <Header.Subheader>
-                                  {
-                                    submittedPuzzle.description /* TODO Egle kaip slepia overflow characteriu (css text-overflow*/
-                                  }
-                                </Header.Subheader>
-                              </Header>
-                            </GridColumn>
-                          </GridRow>
-                        </Grid>
-                      </Table.Cell>
                       <Table.Cell>
-                        <Checkbox
-                          defaultChecked={submittedPuzzle.approved}
-                        ></Checkbox>
+                        <Image
+                          alt={submittedPuzzle.title} //TODO probably need to change to proper one title != image name
+                          src={
+                            submittedPuzzle.imagePath[0] ||
+                            'images/NoImageAvailable.jpg'
+                          }
+                          size='tiny'
+                          centered
+                        ></Image>
+                      </Table.Cell>
+                      <Table.Cell width='6'>
+                        <Header
+                          as={Link}
+                          to={`/submittedPuzzle/${submittedPuzzle.id}`}
+                          floated='left'
+                          textAlign='left'
+                          size='small'
+                          color='blue'
+                        >
+                          {submittedPuzzle.title}
+                          <Header.Subheader>
+                            {
+                              submittedPuzzle.description /* TODO Egle kaip slepia overflow characteriu (css text-overflow*/
+                            }
+                          </Header.Subheader>
+                        </Header>
                       </Table.Cell>
                       <Table.Cell>
                         <Checkbox
