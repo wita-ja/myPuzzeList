@@ -3,6 +3,7 @@ package com.Vitalij.myPuzzleList.puzzle.controller;
 import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleDescriptionDto;
 import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleStatusDto;
 import com.Vitalij.myPuzzleList.puzzle.dto.PuzzleSummaryDto;
+import com.Vitalij.myPuzzleList.puzzle.dto.SubmittedPuzzleDto;
 import com.Vitalij.myPuzzleList.puzzle.service.PuzzleService;
 import org.springframework.data.domain.*;
 import org.springframework.web.bind.annotation.*;
@@ -44,5 +45,18 @@ public class PuzzleController {
     public List<PuzzleStatusDto> getPuzzleStatuses(
     ) {
         return puzzleService.getPuzzleStatuses();
+    }
+
+    //TODO pakeisti i 25 irasus per psl
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping(value = "/getAllSubmitted")
+    public Page<SubmittedPuzzleDto> getAllSubmittedPuzzleSummaries(
+            @RequestParam(defaultValue = "1", name = "page") Integer pageNo,
+            @RequestParam(defaultValue = "title", name = "sortBy") String sortBy,
+            @RequestParam(defaultValue = "asc", name = "direction") String direction
+    ) {
+        if (sortBy.equals("difficulty")) sortBy = "difficulty.displayName";
+        Pageable pageable = PageRequest.of(pageNo - 1, 2, Sort.by(Sort.Direction.fromString(direction), sortBy));
+        return puzzleService.getSubmittedPuzzleSummaries(pageable);
     }
 }

@@ -63,4 +63,6 @@ public class Puzzle {
     @Column(name = "BRAND")
     private String brand;
 
+    @Column(name = "REJECTED", nullable = false)
+    private Boolean rejected;
 }

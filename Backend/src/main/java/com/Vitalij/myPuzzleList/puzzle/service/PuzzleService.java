@@ -54,6 +54,15 @@ public class PuzzleService {
         );
     }
 
+    public Page<SubmittedPuzzleDto> getSubmittedPuzzleSummaries(Pageable pageable) {
+        Page<Puzzle> puzzles = puzzleRepository.findByApproved(false, pageable);
+        return new PageImpl<>(
+                puzzles.stream().map(this::mapToSubmittedPuzzleDto).collect(Collectors.toList()),
+                puzzles.getPageable(),
+                puzzles.getTotalElements()
+        );
+    }
+
     public PuzzleDescriptionDto getPuzzleDescription(UUID id) {
         Puzzle puzzle = puzzleRepository.findPuzzleById(id);
         System.out.println(puzzle.getId());
@@ -158,6 +167,22 @@ public class PuzzleService {
                 .description(puzzle.getDescription())
                 .imagePath(puzzle.getPuzzleImages().stream().map(Image::getPath).collect(Collectors.toList()))
                 .averageScore(9.99) //TODO average score pakeisti i neharcodinta
+                .build();
+    }
+
+
+    private SubmittedPuzzleDto mapToSubmittedPuzzleDto (Puzzle puzzle) {
+        return SubmittedPuzzleDto.builder()
+                .id(puzzle.getId())
+                .title(puzzle.getTitle())
+                .description(puzzle.getDescription())
+                .difficulty(puzzle.getDifficulty().getDisplayName())
+                .type(puzzle.getType().getName())
+                .brand(puzzle.getBrand())
+                .imagePath(puzzle.getPuzzleImages().stream().map(Image::getPath).collect(Collectors.toList()))
+                .materials(puzzle.getMaterials().stream().map(Material::getName).collect(Collectors.toList()))
+                .approved(puzzle.getApproved())
+                .rejected(puzzle.getRejected())
                 .build();
     }
 
