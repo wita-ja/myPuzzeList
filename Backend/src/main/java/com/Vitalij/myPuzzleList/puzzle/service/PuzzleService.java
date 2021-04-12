@@ -2,9 +2,7 @@ package com.Vitalij.myPuzzleList.puzzle.service;
 
 import com.Vitalij.myPuzzleList.puzzle.dto.*;
 import com.Vitalij.myPuzzleList.puzzle.model.*;
-import com.Vitalij.myPuzzleList.puzzle.repository.PuzzleRepository;
-import com.Vitalij.myPuzzleList.puzzle.repository.StatusRepository;
-import com.Vitalij.myPuzzleList.puzzle.repository.UserPuzzleRepository;
+import com.Vitalij.myPuzzleList.puzzle.repository.*;
 import com.Vitalij.myPuzzleList.user.model.UserDetails;
 import com.Vitalij.myPuzzleList.user.repository.UserRepository;
 import org.springframework.dao.DataAccessException;
@@ -29,16 +27,23 @@ public class PuzzleService {
     private final UserPuzzleRepository userPuzzleRepository;
     private final UserRepository userRepository;
     private final StatusRepository statusRepository;
+    private final DifficultyRepository difficultyRepository;
+    private final TypeRepository typeRepository;
+    private final MaterialRepository materialRepository;
 
     /**
      * constructor injection pvz
      */
     public PuzzleService(PuzzleRepository puzzleRepository, UserPuzzleRepository userPuzzleRepository,
-                         UserRepository userRepository, StatusRepository statusRepository) {
+                         UserRepository userRepository, StatusRepository statusRepository, DifficultyRepository
+                         difficultyRepository, TypeRepository typeRepository, MaterialRepository materialRepository) {
         this.puzzleRepository = puzzleRepository;
         this.userPuzzleRepository = userPuzzleRepository;
         this.userRepository = userRepository;
         this.statusRepository = statusRepository;
+        this.difficultyRepository = difficultyRepository;
+        this.typeRepository = typeRepository;
+        this.materialRepository = materialRepository;
     }
 
     public Puzzle getPuzzleById(UUID puzzleId) {
@@ -74,8 +79,23 @@ public class PuzzleService {
     }
 
     public List<PuzzleStatusDto> getPuzzleStatuses() {
-        List<Status> statuses = statusRepository.findAll(Sort.unsorted());
+        List<Status> statuses = statusRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
         return statuses.stream().map(this::mapToPuzzleStatusDto).collect(Collectors.toList());
+    }
+
+    public List<PuzzleDifficultyDto> getPuzzleDifficulties() {
+        List<Difficulty> difficulties = difficultyRepository.findAll(Sort.by(Sort.Direction.ASC, "level"));
+        return difficulties.stream().map(this::mapToPuzzleDifficultyDto).collect(Collectors.toList());
+    }
+
+    public List<PuzzleTypeDto> getPuzzleTypes() {
+        List<Type> types = typeRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+        return types.stream().map(this::mapToPuzzleTypeDto).collect(Collectors.toList());
+    }
+
+    public List<PuzzleMaterialDto> getPuzzleMaterials() {
+        List<Material> materials = materialRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+        return materials.stream().map(this::mapToPuzzleMaterialDto).collect(Collectors.toList());
     }
 
     public Page<CollectionPuzzleDto> getUserCollectionPuzzles(String username, Pageable pageable) {
@@ -181,7 +201,7 @@ public class PuzzleService {
         return PuzzleSummaryDto.builder()
                 .id(puzzle.getId())
                 .title(puzzle.getTitle())
-                .difficulty(puzzle.getDifficulty().getDisplayName())
+                .difficulty("Level " + puzzle.getDifficulty().getLevel() + " - " + puzzle.getDifficulty().getDisplayName())
                 .description(puzzle.getDescription())
                 .imagePath(puzzle.getPuzzleImages().stream().map(Image::getPath).collect(Collectors.toList()))
                 .averageScore(9.99) //TODO average score pakeisti i neharcodinta
@@ -300,12 +320,12 @@ public class PuzzleService {
 
     private Puzzle mapToPuzzle(Puzzle puzzle, SubmittedPuzzleVisibilityRequestBodyDto requestBody) {
 
-        Boolean approved;
+        boolean approved;
         if(requestBody.getApproved() == null) {
             approved = false;
         } else approved = requestBody.getApproved();
 
-        Boolean rejected;
+        boolean rejected;
         if(requestBody.getRejected() == null) {
             rejected = false;
         } else rejected = requestBody.getRejected();
@@ -329,6 +349,24 @@ public class PuzzleService {
     private PuzzleStatusDto mapToPuzzleStatusDto(Status status) {
         return PuzzleStatusDto.builder()
                 .status(status.getName())
+                .build();
+    }
+
+    private PuzzleDifficultyDto mapToPuzzleDifficultyDto(Difficulty difficulty) {
+        return PuzzleDifficultyDto.builder()
+                .difficulty("Level " + difficulty.getLevel() + " - " + difficulty.getDisplayName())
+                .build();
+    }
+
+    private PuzzleTypeDto mapToPuzzleTypeDto(Type type) {
+        return PuzzleTypeDto.builder()
+                .type(type.getName())
+                .build();
+    }
+
+    private PuzzleMaterialDto mapToPuzzleMaterialDto(Material material) {
+        return PuzzleMaterialDto.builder()
+                .material(material.getName())
                 .build();
     }
 }

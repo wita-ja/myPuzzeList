@@ -78,4 +78,25 @@ public class PuzzleController {
         } else
         return puzzleService.updateSubmittedPuzzleVisibility(requestBody, puzzleId);
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping(value = "/getDifficulties")
+    public List<PuzzleDifficultyDto> getPuzzleDifficulties(
+    ) {
+        return puzzleService.getPuzzleDifficulties();
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping(value = "/getTypes")
+    public List<PuzzleTypeDto> getPuzzleTypes(
+    ) {
+        return puzzleService.getPuzzleTypes();
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping(value = "/getMaterials")
+    public List<PuzzleMaterialDto> getPuzzleMaterials(
+    ) {
+        return puzzleService.getPuzzleMaterials();
+    }
 }
