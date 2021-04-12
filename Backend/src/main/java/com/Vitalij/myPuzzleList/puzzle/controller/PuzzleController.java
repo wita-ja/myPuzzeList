@@ -6,6 +6,7 @@ import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -98,5 +99,19 @@ public class PuzzleController {
     public List<PuzzleMaterialDto> getPuzzleMaterials(
     ) {
         return puzzleService.getPuzzleMaterials();
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PostMapping("/saveImage")
+    public ResponseEntity<Object> savePuzzleToCollection(
+            @RequestParam(name = "file") MultipartFile file
+    ) {
+        return puzzleService.saveImage(file);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PostMapping("/submitPuzzle")
+    public ResponseEntity<Object> savePuzzleToCollection(@RequestBody SubmittedPuzzleDto requestBody) {
+        return puzzleService.submitPuzzle(requestBody);
     }
 }
