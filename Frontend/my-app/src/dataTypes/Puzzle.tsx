@@ -1,7 +1,6 @@
 export default interface Puzzle {
   id: string;
   difficulty: number;
-  difficultyName: string;
   imagePath: string;
   solution_id: string;
   title: string;
