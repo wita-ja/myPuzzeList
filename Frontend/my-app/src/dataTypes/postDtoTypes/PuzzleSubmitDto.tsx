@@ -1,6 +1,6 @@
 export default interface PuzzleSubmitDto {
   title: string;
-  description: string | undefined;
+  description: string;
   difficulty: string;
   type: string;
   brand: string;
