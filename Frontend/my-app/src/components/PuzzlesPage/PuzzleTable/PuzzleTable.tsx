@@ -190,7 +190,7 @@ const PuzzleTable = () => {
                       </Header>
                     </Table.Cell>
                     <Table.Cell>{puzzle.difficulty}</Table.Cell>
-                    <Table.Cell>{puzzle.avgScore || 'N/A'}</Table.Cell>
+                    <Table.Cell>{puzzle.averageScore || 'N/A'}</Table.Cell>
                   </Table.Row>
                 );
               })}
