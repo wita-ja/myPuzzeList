@@ -5,6 +5,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   Grid,
+  Segment,
   Image,
   Divider,
   Header,
@@ -53,7 +54,7 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [isAdded, setIsAdded] = useState(false);
+  const [allowToAdd, setAllowToAdd] = useState(false);
   //TODO implement solution viewing
   const [isSolutionUnlocked, setSolutionUnlocked] = useState(false);
 
@@ -79,14 +80,12 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
   useEffect(() => {
     if (props.isLogged) {
       executeValidation();
-
       setIsLoading(true);
-      setIsAdded(getListValidationData);
-
-      setTimeout(() => {
-        setIsLoading(getListValidationLoading);
-      }, 500);
-    }
+      if (getListValidationData) {
+        setAllowToAdd(getListValidationData);
+      }
+      setIsLoading(getListValidationLoading);
+    } else setAllowToAdd(false);
   }, [getListValidationData]);
 
   const notify = () => {
@@ -145,7 +144,9 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
                     </Grid.Column>
 
                     <GridColumn>
-                      {state[el.toLocaleLowerCase() as keyof PuzzleDescription]}
+                      {state[
+                        el.toLocaleLowerCase() as keyof PuzzleDescription
+                      ] || 'No information'}
                     </GridColumn>
                   </Grid.Row>
                 );
@@ -164,9 +165,7 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
               <Grid.Row>
                 {props.isLogged && (
                   <>
-                    {isAdded ? (
-                      <Button disabled>Already added to collection</Button>
-                    ) : (
+                    {allowToAdd ? (
                       <AddToCollectionModal
                         open={showModal}
                         onOpen={() => setShowModal(true)}
@@ -177,6 +176,8 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
                         userName={props.username}
                         solutionUnlocked={isSolutionUnlocked}
                       ></AddToCollectionModal>
+                    ) : (
+                      <Button disabled>Already added to collection</Button>
                     )}
                   </>
                 )}

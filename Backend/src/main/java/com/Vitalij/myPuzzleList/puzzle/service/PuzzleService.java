@@ -186,7 +186,7 @@ public class PuzzleService {
 
         UserPuzzleKey userPuzzleId = new UserPuzzleKey(userDetails.getId(), puzzleId);
         UserPuzzle userPuzzle = userPuzzleRepository.findUserPuzzleById(userPuzzleId);
-        return mapToCollectionPuzzleRequestBodydto(userPuzzle, username);
+        return mapToCollectionPuzzleRequestBodyDto(userPuzzle, username);
     }
 
     public ResponseEntity<Object> deleteUserPuzzle(String username, UUID puzzleId) {
@@ -244,7 +244,7 @@ public class PuzzleService {
                 puzzleMaterials.add(materialRepository.findByName(material));
             }
 
-            Set<Image> puzzleImages = new HashSet<>();
+            List<Image> puzzleImages = new ArrayList<>();
             Image image = imageRepository.findTopByTemp(true);
             puzzleImages.add(image);
 
@@ -270,7 +270,7 @@ public class PuzzleService {
                 .difficulty("Level " + puzzle.getDifficulty().getLevel() + " - " + puzzle.getDifficulty().getDisplayName())
                 .description(puzzle.getDescription())
                 .imagePath(puzzle.getPuzzleImages().stream().map(Image::getPath).collect(Collectors.toList()))
-                .averageScore(9.99) //TODO average score pakeisti i neharcodinta
+                .averageScore(calculatePuzzleAverageRating(puzzle))
                 .build();
     }
 
@@ -311,8 +311,21 @@ public class PuzzleService {
                 .brand(puzzle.getBrand())
                 .material(puzzle.getMaterials().stream().map(Material::getName).collect(Collectors.toList()))
                 .imagePath(puzzle.getPuzzleImages().stream().map(Image::getPath).collect(Collectors.toList()))
-                .averageScore(9.99) //TODO average score pakeisti i neharcodinta
+                .averageScore(calculatePuzzleAverageRating(puzzle))
                 .build();
+    }
+
+    private Double calculatePuzzleAverageRating(Puzzle puzzle) {
+        double result = 0.00;
+        List<UserPuzzle> userPuzzles = userPuzzleRepository.findAllUserPuzzleByPuzzle(puzzle);
+
+        for (UserPuzzle userPuzzle: userPuzzles
+             ) {
+            result =+ userPuzzle.getScore();
+        }
+
+        System.out.println(result/userPuzzles.size());
+        return result/userPuzzles.size();
     }
 
     private CollectionPuzzleDto mapToCollectionPuzzleDto(UserPuzzle userPuzzle) {
@@ -325,7 +338,7 @@ public class PuzzleService {
                 .build();
     }
 
-    private CollectionPuzzleRequestBodyDto mapToCollectionPuzzleRequestBodydto(UserPuzzle userPuzzle, String username) {
+    private CollectionPuzzleRequestBodyDto mapToCollectionPuzzleRequestBodyDto(UserPuzzle userPuzzle, String username) {
         return CollectionPuzzleRequestBodyDto.builder()
                 .username(username)
                 .status(userPuzzle.getStatus().getName())
@@ -415,7 +428,7 @@ public class PuzzleService {
     }
 
     private Puzzle mapToPuzzle(Type puzzleType, Difficulty puzzleDifficulty,
-                               Set<Material> puzzleMaterials, Set<Image> puzzleImages,
+                               Set<Material> puzzleMaterials, List<Image> puzzleImages,
                                SubmittedPuzzleDto requestBody) {
         String brand;
         if (requestBody.getBrand().length() == 0) {

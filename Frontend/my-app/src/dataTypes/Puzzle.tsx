@@ -8,7 +8,7 @@ export default interface Puzzle {
   type: string;
   brand: string;
   material: string[];
-  avgScore: number | string;
-  userScore: number | string;
+  averageScore: number | string;
+  userRating: number | string;
   approved: boolean;
 }

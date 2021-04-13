@@ -166,7 +166,7 @@ const PuzzleTable = () => {
                       <Image
                         alt={puzzle.title} //TODO probably need to change to proper one title != image name
                         src={
-                          puzzle.imagePath[0] || 'images/NoImageAvailable.jpg'
+                          puzzle.imagePath[0] || '/images/NoImageAvailable.jpg'
                         }
                         size='tiny'
                         centered
@@ -190,7 +190,7 @@ const PuzzleTable = () => {
                       </Header>
                     </Table.Cell>
                     <Table.Cell>{puzzle.difficulty}</Table.Cell>
-                    <Table.Cell>{puzzle.avgScore || 'N/A'}</Table.Cell>
+                    <Table.Cell>{puzzle.averageScore || 'N/A'}</Table.Cell>
                   </Table.Row>
                 );
               })}
