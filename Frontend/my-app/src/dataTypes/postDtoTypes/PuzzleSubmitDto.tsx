@@ -4,6 +4,5 @@ export default interface PuzzleSubmitDto {
   difficulty: string;
   type: string;
   brand: string;
-  imagePath: string[];
   materials: string[];
 }

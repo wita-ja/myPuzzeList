@@ -223,7 +223,7 @@ public class PuzzleService {
                 Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
                 Image imageToSave = Image.builder().id(UUID.randomUUID()).path("/images/" + filename).temp(true).build();
                 imageRepository.save(imageToSave);
-                return new ResponseEntity<>("oke", HttpStatus.OK);
+                return new ResponseEntity<>("oke", HttpStatus.CREATED);
             } else throw new IOException();
         } catch (IOException ioe) {
             System.out.println("Could not save image file:" + Arrays.toString(ioe.getStackTrace()));
@@ -233,6 +233,11 @@ public class PuzzleService {
 
     public ResponseEntity<Object> submitPuzzle(SubmittedPuzzleDto requestBody) {
         try {
+
+            if(puzzleRepository.findPuzzleByTitle(requestBody.getTitle()).isPresent()) {
+                return new ResponseEntity<>("Puzzle with such title is already submitted", HttpStatus.CONFLICT);
+            }
+
             Set<Material> puzzleMaterials = new HashSet<>();
             for (String material : requestBody.getMaterials()
             ) {
@@ -251,7 +256,7 @@ public class PuzzleService {
 
             image.setTemp(false);
             imageRepository.save(image);
-            return new ResponseEntity<>("Puzzle successfully submitted", HttpStatus.OK);
+            return new ResponseEntity<>("Puzzle successfully submitted", HttpStatus.CREATED);
         } catch (DataAccessException e) {
             System.out.println("Error response \n" + Arrays.toString(e.getStackTrace()));
             return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);

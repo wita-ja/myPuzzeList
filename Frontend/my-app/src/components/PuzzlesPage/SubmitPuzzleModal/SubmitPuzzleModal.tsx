@@ -1,4 +1,4 @@
-import { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import useAxios from 'axios-hooks';
 import React, { useEffect, useState } from 'react';
 import {
@@ -43,19 +43,51 @@ interface isFieldFilled {
 const SubmitPuzzleModal = (props: SubmitPuzzleModalProps) => {
   const { onClose, onOpen, onSuccess, open, trigger } = props;
 
-  const [{ data: getData, loading: getLoading, error: getError }] = useAxios({
-    url: 'http://localhost:8080/api/puzzle/getStatuses',
+  const [
+    { data: getTypesData, loading: getTypesLoading, error: getTypesError },
+  ] = useAxios({
+    url: 'http://localhost:8080/api/puzzle/getTypes',
     headers: {
       'Access-Control-Allow-Origin': '*',
     },
   });
 
   const [
-    { data: postData, loading: postLoading, error: postError },
-    executePost,
+    {
+      data: getDifficultiesData,
+      loading: getDifficultiesLoading,
+      error: getDifficultiesError,
+    },
+  ] = useAxios({
+    url: 'http://localhost:8080/api/puzzle/getDifficulties',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
+  });
+
+  const [
+    {
+      data: getMaterialsData,
+      loading: getMaterialsLoading,
+      error: getMaterialsError,
+    },
+  ] = useAxios({
+    url: 'http://localhost:8080/api/puzzle/getMaterials',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
+  });
+
+  const [
+    {
+      data: postPuzzleData,
+      loading: postPuzzleLoading,
+      error: postPuzzleError,
+    },
+    executePuzzlePost,
   ] = useAxios(
     {
-      url: `http://localhost:8080/api/user/collection/add/`,
+      url: `http://localhost:8080/api/puzzle/submitPuzzle`,
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -64,6 +96,7 @@ const SubmitPuzzleModal = (props: SubmitPuzzleModalProps) => {
     { manual: true }
   );
 
+  const [imageUploading, setImageUploading] = useState(false);
   const [isFieldFilled, setIsFieldFilled] = useState<isFieldFilled>({
     titleFilled: false,
     descriptionFilled: false,
@@ -79,44 +112,110 @@ const SubmitPuzzleModal = (props: SubmitPuzzleModalProps) => {
     imageFile: [] as File[],
     imageName: '',
   });
+
   const [difficulties, setDifficulties] = useState({
     puzzleDifficulties: [] as PuzzleDifficulty[],
     loading: false as boolean,
     error: undefined as AxiosError<any> | undefined,
   });
-  const [types, setTypes] = useState({
-    puzzletypes: [] as PuzzleType[],
-    loading: false as boolean,
-    error: undefined as AxiosError<any> | undefined,
-  });
-  const [materials, setMaterials] = useState({
-    puzzlematerials: [] as PuzzleMaterial[],
-    loading: false as boolean,
-    error: undefined as AxiosError<any> | undefined,
-  });
-  const [postErrorMessage, setPostErrorMessage] = useState('');
 
-  //Dropdown values effect
-  /* useEffect(() => {
-    setStatuses({
-      ...statuses,
+  const [types, setTypes] = useState({
+    puzzleTypes: [] as PuzzleType[],
+    loading: false as boolean,
+    error: undefined as AxiosError<any> | undefined,
+  });
+
+  const [materials, setMaterials] = useState({
+    puzzleMaterials: [] as PuzzleMaterial[],
+    loading: false as boolean,
+    error: undefined as AxiosError<any> | undefined,
+  });
+  const [postPuzzleErrorMessage, setPostPuzzleErrorMessage] = useState('');
+
+  //Dropdown values effects
+  useEffect(() => {
+    setTypes({
+      ...types,
       loading: true,
     });
 
-    if (getData) {
-      setStatuses({
-        ...statuses,
-        puzzleStatuses: getData,
-        loading: getLoading,
+    if (getTypesData) {
+      setTypes({
+        ...types,
+        puzzleTypes: getTypesData.map((el: string) => {
+          return {
+            key: Object.values(el),
+            text: Object.values(el),
+            value: Object.values(el),
+          };
+        }),
+        loading: getTypesLoading,
       });
     } else {
-      setStatuses({
-        ...statuses,
-        error: getError,
-        loading: getLoading,
+      setTypes({
+        ...types,
+        error: getTypesError,
+        loading: getTypesLoading,
       });
     }
-  }, [getData, getLoading, getError]); */
+    console.log(types.puzzleTypes);
+  }, [getTypesData, getTypesLoading, getTypesError]);
+
+  useEffect(() => {
+    setDifficulties({
+      ...difficulties,
+      loading: true,
+    });
+
+    if (getDifficultiesData) {
+      setDifficulties({
+        ...difficulties,
+        puzzleDifficulties: getDifficultiesData.map((el: string) => {
+          return {
+            key: Object.values(el),
+            text: Object.values(el),
+            value: Object.values(el),
+          };
+        }),
+        loading: getDifficultiesLoading,
+      });
+    } else {
+      setDifficulties({
+        ...difficulties,
+        error: getDifficultiesError,
+        loading: getDifficultiesLoading,
+      });
+    }
+    console.log(types.puzzleTypes);
+  }, [getDifficultiesData, getDifficultiesLoading, getDifficultiesError]);
+
+  useEffect(() => {
+    setMaterials({
+      ...materials,
+      loading: true,
+    });
+
+    if (getMaterialsData) {
+      setMaterials({
+        ...materials,
+        puzzleMaterials: getMaterialsData.map((el: string) => {
+          return {
+            key: Object.values(el),
+            text: Object.values(el),
+            value: Object.values(el),
+          };
+        }),
+        loading: getMaterialsLoading,
+      });
+    } else {
+      setMaterials({
+        ...materials,
+        error: getMaterialsError,
+        loading: getMaterialsLoading,
+      });
+    }
+    console.log(types.puzzleTypes);
+  }, [getMaterialsData, getMaterialsLoading, getMaterialsError]);
 
   //Use effect which triggers submit button enabling (actions - interaction with required fields)
   useEffect(() => {
@@ -126,27 +225,53 @@ const SubmitPuzzleModal = (props: SubmitPuzzleModalProps) => {
   }, [isFieldFilled]);
 
   useEffect(() => {
-    setPostErrorMessage(postError?.response?.data);
-  }, [postError]);
+    setPostPuzzleErrorMessage(postPuzzleError?.response?.data);
+  }, [postPuzzleError]);
 
   const handleSubmit = async (event: React.MouseEvent) => {
     event.preventDefault();
 
-    /* const response = await executePost({
-      data: {
-        username: props.userName,
-        status: statusInputValue,
-        //@ts-ignore
-        score: scoreInputValue.slice(0, 2).trim() as number,
-        solutionUnlocked: props.solutionUnlocked,
-      } as CollectionPuzzleDto,
-    });
+    setImageUploading(true);
 
-    if (response.status === 201) {
-      
-    } */
-    onSuccess();
-    onModalClose();
+    const formData = new FormData();
+    formData.append('file', uploadedImageInfo.imageFile[0]);
+
+    const imageUploadResponse: AxiosResponse<any> = await axios.post(
+      `http://localhost:8080/api/puzzle/saveImage`,
+      formData,
+      {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    setImageUploading(false);
+    console.log('image status: ' + imageUploadResponse.status);
+
+    if (imageUploadResponse.status == 201 && !imageUploading) {
+      const materials: string[] = puzzleToSubmit.materials.map((el) => {
+        return el[0];
+      });
+      const response = await executePuzzlePost({
+        data: {
+          title: puzzleToSubmit.title,
+          description: puzzleToSubmit.description,
+          type: puzzleToSubmit.type,
+          difficulty: puzzleToSubmit.difficulty,
+          brand: puzzleToSubmit.brand,
+          materials: materials,
+        } as PuzzleSubmitDto,
+      });
+
+      if (response.status == 201) {
+        onSuccess();
+        onModalClose();
+      }
+    } else {
+      //error  notifa image parodyti
+    }
   };
 
   const handleTitleInputValue = (
@@ -190,7 +315,7 @@ const SubmitPuzzleModal = (props: SubmitPuzzleModalProps) => {
     setPuzzleToSubmit({
       ...puzzleToSubmit,
       //@ts-ignore
-      description: data.value?.toString(),
+      difficulty: data.value?.toString(),
     });
     //@ts-ignore
     data.value?.toString().length > 0
@@ -268,7 +393,7 @@ const SubmitPuzzleModal = (props: SubmitPuzzleModalProps) => {
       imageName: '',
     });
     setIsSubmitDisabled(true);
-    setPostErrorMessage('');
+    setPostPuzzleErrorMessage('');
     onClose();
   };
 
@@ -334,16 +459,8 @@ const SubmitPuzzleModal = (props: SubmitPuzzleModalProps) => {
                   fluid
                   placeholder='Select difficulty'
                   onChange={handleDifficultyDropdown}
-                  options={
-                    //Must to be options
-                    [
-                      {
-                        key: 'option',
-                        text: 'option1',
-                        value: 'option1',
-                      },
-                    ]
-                  }
+                  options={difficulties.puzzleDifficulties}
+                  loading={getDifficultiesLoading}
                 ></Dropdown>
               </GridColumn>
             </GridRow>
@@ -357,16 +474,8 @@ const SubmitPuzzleModal = (props: SubmitPuzzleModalProps) => {
                   fluid
                   placeholder='Select puzzle type'
                   onChange={handleTypeDropdown}
-                  options={
-                    //Must to be options
-                    [
-                      {
-                        key: 'option',
-                        text: 'option1',
-                        value: 'option1',
-                      },
-                    ]
-                  }
+                  options={types.puzzleTypes}
+                  loading={getTypesLoading}
                 ></Dropdown>
               </GridColumn>
             </GridRow>
@@ -381,16 +490,8 @@ const SubmitPuzzleModal = (props: SubmitPuzzleModalProps) => {
                   fluid
                   placeholder='Select materials'
                   onChange={handleMaterialsDropdown}
-                  options={
-                    //Must to be options
-                    [
-                      {
-                        key: 'option',
-                        text: 'option1',
-                        value: 'option1',
-                      },
-                    ]
-                  }
+                  options={materials.puzzleMaterials}
+                  loading={getMaterialsLoading}
                 ></Dropdown>
               </GridColumn>
             </GridRow>
@@ -412,26 +513,29 @@ const SubmitPuzzleModal = (props: SubmitPuzzleModalProps) => {
               </GridColumn>
             </GridRow>
 
-            {/* //TODO error handling component
+            {
+              //TODO error handling component
               //@ts-ignore
-              (postErrorMessage?.error === 'Internal Server Error' ||
-                //@ts-ignore
-                postErrorMessage?.error === 'Bad Request') && (
+              (postPuzzleErrorMessage === 'Internal Server Error' ||
+                postPuzzleErrorMessage === 'Bad Request') && (
                 <Container textAlign='center'>
                   <Header as='h5' className='error'>
-                    {postError?.response?.data.error}
+                    {postPuzzleError?.response?.data.error}
                   </Header>
                 </Container>
-              ) */}
-            {/* //TODO error handling component
-              postErrorMessage ===
-                'User collection already contains this puzzle' && (
+              )
+            }
+            {
+              //TODO error handling component
+              postPuzzleErrorMessage ===
+                'Puzzle with such title already submitted' && (
                 <Container textAlign='center'>
                   <Header as='h5' className='error'>
-                    {postError?.response?.data}
+                    {postPuzzleError?.response?.data}
                   </Header>
                 </Container>
-              ) */}
+              )
+            }
             <GridRow key={'modal_submitButtons'} centered>
               <Button size='mini' onClick={onModalClose}>
                 Cancel
