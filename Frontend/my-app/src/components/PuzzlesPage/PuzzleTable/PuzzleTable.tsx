@@ -155,16 +155,6 @@ const PuzzleTable = () => {
                 >
                   Avg Rating
                 </Table.HeaderCell>
-                <Table.HeaderCell
-                  sorted={
-                    state.column === 'userScore'
-                      ? (state.direction as 'ascending' | 'descending')
-                      : undefined
-                  }
-                  onClick={handleSort('userScore')}
-                >
-                  Your Score
-                </Table.HeaderCell>
               </Table.Row>
             </Table.Header>
 
@@ -201,7 +191,6 @@ const PuzzleTable = () => {
                     </Table.Cell>
                     <Table.Cell>{puzzle.difficulty}</Table.Cell>
                     <Table.Cell>{puzzle.avgScore || 'N/A'}</Table.Cell>
-                    <Table.Cell>{puzzle.userScore || 'N/A'}</Table.Cell>
                   </Table.Row>
                 );
               })}

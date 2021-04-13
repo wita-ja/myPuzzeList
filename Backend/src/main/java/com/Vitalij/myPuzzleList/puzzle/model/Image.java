@@ -1,9 +1,6 @@
 package com.Vitalij.myPuzzleList.puzzle.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
@@ -12,6 +9,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
+@Setter
 @ToString
 @SuperBuilder
 @NoArgsConstructor
@@ -26,6 +24,9 @@ public class Image {
 
     @Column(name = "PATH", nullable = false)
     private String path;
+
+    @Column(name = "TEMP", nullable = false)
+    private Boolean temp;
 
     @ManyToMany(mappedBy = "puzzleImages")
     private Set<Puzzle> puzzles;

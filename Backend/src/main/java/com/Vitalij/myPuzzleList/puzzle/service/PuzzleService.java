@@ -2,9 +2,7 @@ package com.Vitalij.myPuzzleList.puzzle.service;
 
 import com.Vitalij.myPuzzleList.puzzle.dto.*;
 import com.Vitalij.myPuzzleList.puzzle.model.*;
-import com.Vitalij.myPuzzleList.puzzle.repository.PuzzleRepository;
-import com.Vitalij.myPuzzleList.puzzle.repository.StatusRepository;
-import com.Vitalij.myPuzzleList.puzzle.repository.UserPuzzleRepository;
+import com.Vitalij.myPuzzleList.puzzle.repository.*;
 import com.Vitalij.myPuzzleList.user.model.UserDetails;
 import com.Vitalij.myPuzzleList.user.repository.UserRepository;
 import org.springframework.dao.DataAccessException;
@@ -15,10 +13,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -29,16 +32,25 @@ public class PuzzleService {
     private final UserPuzzleRepository userPuzzleRepository;
     private final UserRepository userRepository;
     private final StatusRepository statusRepository;
+    private final DifficultyRepository difficultyRepository;
+    private final TypeRepository typeRepository;
+    private final MaterialRepository materialRepository;
+    private final ImageRepository imageRepository;
 
     /**
      * constructor injection pvz
      */
     public PuzzleService(PuzzleRepository puzzleRepository, UserPuzzleRepository userPuzzleRepository,
-                         UserRepository userRepository, StatusRepository statusRepository) {
+                         UserRepository userRepository, StatusRepository statusRepository, DifficultyRepository
+                                 difficultyRepository, TypeRepository typeRepository, MaterialRepository materialRepository, ImageRepository imageRepository) {
         this.puzzleRepository = puzzleRepository;
         this.userPuzzleRepository = userPuzzleRepository;
         this.userRepository = userRepository;
         this.statusRepository = statusRepository;
+        this.difficultyRepository = difficultyRepository;
+        this.typeRepository = typeRepository;
+        this.materialRepository = materialRepository;
+        this.imageRepository = imageRepository;
     }
 
     public Puzzle getPuzzleById(UUID puzzleId) {
@@ -74,8 +86,23 @@ public class PuzzleService {
     }
 
     public List<PuzzleStatusDto> getPuzzleStatuses() {
-        List<Status> statuses = statusRepository.findAll(Sort.unsorted());
+        List<Status> statuses = statusRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
         return statuses.stream().map(this::mapToPuzzleStatusDto).collect(Collectors.toList());
+    }
+
+    public List<PuzzleDifficultyDto> getPuzzleDifficulties() {
+        List<Difficulty> difficulties = difficultyRepository.findAll(Sort.by(Sort.Direction.ASC, "level"));
+        return difficulties.stream().map(this::mapToPuzzleDifficultyDto).collect(Collectors.toList());
+    }
+
+    public List<PuzzleTypeDto> getPuzzleTypes() {
+        List<Type> types = typeRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+        return types.stream().map(this::mapToPuzzleTypeDto).collect(Collectors.toList());
+    }
+
+    public List<PuzzleMaterialDto> getPuzzleMaterials() {
+        List<Material> materials = materialRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+        return materials.stream().map(this::mapToPuzzleMaterialDto).collect(Collectors.toList());
     }
 
     public Page<CollectionPuzzleDto> getUserCollectionPuzzles(String username, Pageable pageable) {
@@ -177,11 +204,70 @@ public class PuzzleService {
         }
     }
 
+    public ResponseEntity<Object> saveImage(MultipartFile file) {
+
+        String filename = file.getOriginalFilename();
+        Path uploadPath = Paths.get("Frontend/my-app/public/images/");
+
+        if (!Files.exists(uploadPath)) {
+            try {
+                Files.createDirectories(uploadPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try (InputStream inputStream = file.getInputStream()) {
+            Path filePath = uploadPath.resolve(Objects.requireNonNull(filename));
+            if (!Files.exists(filePath)) {
+                Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+                Image imageToSave = Image.builder().id(UUID.randomUUID()).path("/images/" + filename).temp(true).build();
+                imageRepository.save(imageToSave);
+                return new ResponseEntity<>("oke", HttpStatus.CREATED);
+            } else throw new IOException();
+        } catch (IOException ioe) {
+            System.out.println("Could not save image file:" + Arrays.toString(ioe.getStackTrace()));
+            return new ResponseEntity<>("Could not save image file", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> submitPuzzle(SubmittedPuzzleDto requestBody) {
+        try {
+
+            if(puzzleRepository.findPuzzleByTitle(requestBody.getTitle()).isPresent()) {
+                return new ResponseEntity<>("Puzzle with such title is already submitted", HttpStatus.CONFLICT);
+            }
+
+            Set<Material> puzzleMaterials = new HashSet<>();
+            for (String material : requestBody.getMaterials()
+            ) {
+                puzzleMaterials.add(materialRepository.findByName(material));
+            }
+
+            Set<Image> puzzleImages = new HashSet<>();
+            Image image = imageRepository.findTopByTemp(true);
+            puzzleImages.add(image);
+
+            Type puzzleType = typeRepository.findByName(requestBody.getType());
+            Difficulty puzzleDifficulty = difficultyRepository.findByDisplayName(requestBody.getDifficulty().substring(10));
+
+            Puzzle submittedPuzzle = mapToPuzzle(puzzleType, puzzleDifficulty, puzzleMaterials, puzzleImages, requestBody);
+            puzzleRepository.save(submittedPuzzle);
+
+            image.setTemp(false);
+            imageRepository.save(image);
+            return new ResponseEntity<>("Puzzle successfully submitted", HttpStatus.CREATED);
+        } catch (DataAccessException e) {
+            System.out.println("Error response \n" + Arrays.toString(e.getStackTrace()));
+            return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     private PuzzleSummaryDto mapToPuzzleSummaryDto(Puzzle puzzle) {
         return PuzzleSummaryDto.builder()
                 .id(puzzle.getId())
                 .title(puzzle.getTitle())
-                .difficulty(puzzle.getDifficulty().getDisplayName())
+                .difficulty("Level " + puzzle.getDifficulty().getLevel() + " - " + puzzle.getDifficulty().getDisplayName())
                 .description(puzzle.getDescription())
                 .imagePath(puzzle.getPuzzleImages().stream().map(Image::getPath).collect(Collectors.toList()))
                 .averageScore(9.99) //TODO average score pakeisti i neharcodinta
@@ -189,7 +275,9 @@ public class PuzzleService {
     }
 
 
-    private SubmittedPuzzleDto mapToSubmittedPuzzleDto (Puzzle puzzle) {
+    private SubmittedPuzzleDto mapToSubmittedPuzzleDto(Puzzle puzzle) {
+        puzzle.getPuzzleImages().add(new Image());
+
         return SubmittedPuzzleDto.builder()
                 .id(puzzle.getId())
                 .title(puzzle.getTitle())
@@ -300,13 +388,13 @@ public class PuzzleService {
 
     private Puzzle mapToPuzzle(Puzzle puzzle, SubmittedPuzzleVisibilityRequestBodyDto requestBody) {
 
-        Boolean approved;
-        if(requestBody.getApproved() == null) {
+        boolean approved;
+        if (requestBody.getApproved() == null) {
             approved = false;
         } else approved = requestBody.getApproved();
 
-        Boolean rejected;
-        if(requestBody.getRejected() == null) {
+        boolean rejected;
+        if (requestBody.getRejected() == null) {
             rejected = false;
         } else rejected = requestBody.getRejected();
 
@@ -326,9 +414,49 @@ public class PuzzleService {
 
     }
 
+    private Puzzle mapToPuzzle(Type puzzleType, Difficulty puzzleDifficulty,
+                               Set<Material> puzzleMaterials, Set<Image> puzzleImages,
+                               SubmittedPuzzleDto requestBody) {
+        String brand;
+        if (requestBody.getBrand().length() == 0) {
+            brand = null;
+        } else brand = requestBody.getBrand();
+
+        return Puzzle.builder()
+                .id(UUID.randomUUID())
+                .title(requestBody.getTitle())
+                .description(requestBody.getDescription())
+                .type(puzzleType)
+                .difficulty(puzzleDifficulty)
+                .brand(brand)
+                .materials(puzzleMaterials)
+                .puzzleImages(puzzleImages)
+                .approved(false)
+                .rejected(false)
+                .build();
+    }
+
     private PuzzleStatusDto mapToPuzzleStatusDto(Status status) {
         return PuzzleStatusDto.builder()
                 .status(status.getName())
+                .build();
+    }
+
+    private PuzzleDifficultyDto mapToPuzzleDifficultyDto(Difficulty difficulty) {
+        return PuzzleDifficultyDto.builder()
+                .difficulty("Level " + difficulty.getLevel() + " - " + difficulty.getDisplayName())
+                .build();
+    }
+
+    private PuzzleTypeDto mapToPuzzleTypeDto(Type type) {
+        return PuzzleTypeDto.builder()
+                .type(type.getName())
+                .build();
+    }
+
+    private PuzzleMaterialDto mapToPuzzleMaterialDto(Material material) {
+        return PuzzleMaterialDto.builder()
+                .material(material.getName())
                 .build();
     }
 }
