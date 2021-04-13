@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -52,7 +53,7 @@ public class Puzzle {
             joinColumns = { @JoinColumn(name = "puzzle_id") },
             inverseJoinColumns = { @JoinColumn(name = "image_id") }
     )
-    private Set<Image> puzzleImages;
+    private List<Image> puzzleImages;
 
     @Column(name = "TITLE", nullable = false, unique = true)
     private String title;

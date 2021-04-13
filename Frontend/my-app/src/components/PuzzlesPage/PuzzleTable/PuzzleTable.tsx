@@ -166,7 +166,7 @@ const PuzzleTable = () => {
                       <Image
                         alt={puzzle.title} //TODO probably need to change to proper one title != image name
                         src={
-                          puzzle.imagePath[0] || 'images/NoImageAvailable.jpg'
+                          puzzle.imagePath[0] || '/images/NoImageAvailable.jpg'
                         }
                         size='tiny'
                         centered

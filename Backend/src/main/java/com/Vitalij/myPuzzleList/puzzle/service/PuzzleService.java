@@ -244,7 +244,7 @@ public class PuzzleService {
                 puzzleMaterials.add(materialRepository.findByName(material));
             }
 
-            Set<Image> puzzleImages = new HashSet<>();
+            List<Image> puzzleImages = new ArrayList<>();
             Image image = imageRepository.findTopByTemp(true);
             puzzleImages.add(image);
 
@@ -415,7 +415,7 @@ public class PuzzleService {
     }
 
     private Puzzle mapToPuzzle(Type puzzleType, Difficulty puzzleDifficulty,
-                               Set<Material> puzzleMaterials, Set<Image> puzzleImages,
+                               Set<Material> puzzleMaterials, List<Image> puzzleImages,
                                SubmittedPuzzleDto requestBody) {
         String brand;
         if (requestBody.getBrand().length() == 0) {
