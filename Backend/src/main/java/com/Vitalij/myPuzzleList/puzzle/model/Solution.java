@@ -24,8 +24,8 @@ public class Solution {
     @Column(name = "ID", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "DESCRIPTION", nullable = false)
-    private String description;
+    @Column(name = "UNLOCK_COST", nullable = false)
+    private Integer unlockCost;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "PUZZLE_ID", referencedColumnName = "id", nullable = false)
@@ -38,4 +38,12 @@ public class Solution {
             inverseJoinColumns = { @JoinColumn(name = "image_id") }
     )
     private Set<Image> solutionImages;
+
+    @ManyToMany(cascade = { CascadeType.ALL })
+    @JoinTable(
+            name = "SOLUTION_STEPS",
+            joinColumns = { @JoinColumn(name = "solution_id") },
+            inverseJoinColumns = { @JoinColumn(name = "steps_id") }
+    )
+    private Set<Steps> solutionSteps;
 }
