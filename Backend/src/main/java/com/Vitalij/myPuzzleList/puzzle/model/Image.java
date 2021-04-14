@@ -28,6 +28,9 @@ public class Image {
     @Column(name = "TEMP", nullable = false)
     private Boolean temp;
 
+    @Column(name = "IMAGE_TYPE", nullable = false)
+    private String imageType;
+
     @ManyToMany(mappedBy = "puzzleImages")
     private Set<Puzzle> puzzles;
 
