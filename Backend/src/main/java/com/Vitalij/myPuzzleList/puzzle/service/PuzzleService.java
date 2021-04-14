@@ -154,6 +154,20 @@ public class PuzzleService {
         }
     }
 
+    public ResponseEntity<Object> updateSubmittedPuzzleVisibility(SubmittedPuzzleVisibilityRequestBodyDto requestBody, UUID puzzleId) {
+        try {
+            Puzzle puzzle = puzzleRepository.findPuzzleById(puzzleId);
+
+            Puzzle puzzleToUpdate = mapToPuzzle(puzzle, requestBody);
+            puzzleRepository.save(puzzleToUpdate);
+            return new ResponseEntity<>("Puzzle was successfully updated", HttpStatus.OK);
+
+        } catch (DataAccessException e) {
+            System.out.println("Error response \n" + e.getMessage());
+            return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public Boolean isPuzzlePresentInUserCollection(String username, UUID puzzleId) {
 
         UserDetails userDetails = userRepository.findUserDetailsByUsername(username);
@@ -318,13 +332,14 @@ public class PuzzleService {
         double result = 0.00;
         List<UserPuzzle> userPuzzles = userPuzzleRepository.findAllUserPuzzleByPuzzle(puzzle);
 
-        for (UserPuzzle userPuzzle: userPuzzles
-             ) {
-            result =+ userPuzzle.getScore();
-        }
-
-        System.out.println(result/userPuzzles.size());
-        return result/userPuzzles.size();
+        if (userPuzzles.size() >0) {
+            for (UserPuzzle userPuzzle : userPuzzles
+            ) {
+                result = +userPuzzle.getScore();
+            }
+            System.out.println(result/userPuzzles.size());
+            return result/userPuzzles.size();
+        } else return result;
     }
 
     private CollectionPuzzleDto mapToCollectionPuzzleDto(UserPuzzle userPuzzle) {
