@@ -305,20 +305,40 @@ public class PuzzleService {
                 .build();
     }
 
+    private PuzzleSolutionStepDto mapToPuzzleSolutionStepDto(String stepsDescription, String stepsImagePath) {
+        return PuzzleSolutionStepDto.builder().StepsDescription(stepsDescription)
+                .StepsImagePath(stepsImagePath)
+                .build();
+    }
     private PuzzleDescriptionDto mapToPuzzleDescriptionDto(Puzzle puzzle) {
+
         PuzzleSolutionDto puzzleSolutionDto;
         // handlinu null'a jeigu puzzle neturi solutiono (expected result)
         try {
             ArrayList<String> stepsDescriptions = puzzle.getSolution().getSolutionSteps().
-                    stream().map(Step::getDescription).collect(Collectors.toCollection(ArrayList::new));
+                    stream().map(Step::getDescription).collect(Collectors.toCollection(ArrayList::new)).stream()
+                    .sorted().collect(Collectors.toCollection(ArrayList::new));
 
             ArrayList<String> stepsImages = puzzle.getSolution().getSolutionImages()
-                    .stream().map(Image::getPath).collect(Collectors.toCollection(ArrayList::new));
+                    .stream().map(Image::getPath).collect(Collectors.toCollection(ArrayList::new)).stream()
+                    .sorted().collect(Collectors.toCollection(ArrayList::new));
 
-                    puzzleSolutionDto = PuzzleSolutionDto.builder()
-                    .solutionStepsDescription(stepsDescriptions.stream().sorted().collect(Collectors.toList()))
-                    .solutionStepsImagePaths(stepsImages.stream().sorted().collect(Collectors.toList()))
+            ArrayList<PuzzleSolutionStepDto> solutionDetails = new ArrayList<>();
+
+            for (int i = 0; i < stepsDescriptions.size(); i++) {
+                String imagePath;
+                if( stepsImages.size() < i) {
+                    imagePath = null;
+                } else imagePath = stepsImages.get(i);
+
+                solutionDetails.add(PuzzleSolutionStepDto.builder().StepsDescription(stepsDescriptions.get(i))
+                .StepsImagePath(imagePath).build());
+            }
+
+            puzzleSolutionDto = PuzzleSolutionDto.builder()
+                    .solutionDetails(solutionDetails)
                     .build();
+
         } catch (NullPointerException nullPointerException) {
             puzzleSolutionDto = null;
         }
