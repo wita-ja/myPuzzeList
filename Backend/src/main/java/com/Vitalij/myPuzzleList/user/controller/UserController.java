@@ -97,4 +97,13 @@ public class UserController {
     ) {
         return puzzleService.getUserPuzzleDetails(username, puzzleId);
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping(value = "/{username}/validate/collection/{puzzleId}/isSolutionUnlocked")
+    public Boolean isPuzzleSolutionUnlocked(
+            @PathVariable String username,
+            @PathVariable UUID puzzleId
+    ) {
+        return puzzleService.isPuzzleSolutionUnlocked(username, puzzleId);
+    }
 }

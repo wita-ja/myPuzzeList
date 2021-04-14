@@ -154,20 +154,6 @@ public class PuzzleService {
         }
     }
 
-    public ResponseEntity<Object> updateSubmittedPuzzleVisibility(SubmittedPuzzleVisibilityRequestBodyDto requestBody, UUID puzzleId) {
-        try {
-            Puzzle puzzle = puzzleRepository.findPuzzleById(puzzleId);
-
-            Puzzle puzzleToUpdate = mapToPuzzle(puzzle, requestBody);
-            puzzleRepository.save(puzzleToUpdate);
-            return new ResponseEntity<>("Puzzle was successfully updated", HttpStatus.OK);
-
-        } catch (DataAccessException e) {
-            System.out.println("Error response \n" + e.getMessage());
-            return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public Boolean isPuzzlePresentInUserCollection(String username, UUID puzzleId) {
 
         UserDetails userDetails = userRepository.findUserDetailsByUsername(username);
@@ -176,6 +162,19 @@ public class PuzzleService {
             UserPuzzle userPuzzle = userPuzzleRepository.findUserPuzzleById(userPuzzleId);
             System.out.println("id: " + puzzleId + ' ' + "puzzleId: " + userPuzzle.getPuzzle().getId());
             return userPuzzle.getPuzzle().getId().equals(puzzleId) && !userPuzzle.getDeleted();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public Boolean isPuzzleSolutionUnlocked(String username, UUID puzzleId) {
+
+        UserDetails userDetails = userRepository.findUserDetailsByUsername(username);
+        UserPuzzleKey userPuzzleId = new UserPuzzleKey(userDetails.getId(), puzzleId);
+        try {
+            UserPuzzle userPuzzle = userPuzzleRepository.findUserPuzzleById(userPuzzleId);
+            System.out.println("id: " + puzzleId + ' ' + "puzzleId: " + userPuzzle.getPuzzle().getId());
+            return userPuzzle.getSolutionUnlocked().equals(true);
         } catch (Exception e) {
             return false;
         }
