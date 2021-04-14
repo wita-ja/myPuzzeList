@@ -13,10 +13,10 @@ public class PuzzleDescriptionDto {
     String title;
     String description;
     String difficulty;
-    UUID solutionId;
     String type;
     String brand;
     List<String> material;
     List<String> imagePath;
     Double averageScore;
+    PuzzleSolutionDto solutionDetails;
 }

@@ -306,12 +306,21 @@ public class PuzzleService {
     }
 
     private PuzzleDescriptionDto mapToPuzzleDescriptionDto(Puzzle puzzle) {
-        UUID puzzleSolutionId;
+        PuzzleSolutionDto puzzleSolutionDto;
         // handlinu null'a jeigu puzzle neturi solutiono (expected result)
         try {
-            puzzleSolutionId = puzzle.getSolution().getId();
+            ArrayList<String> stepsDescriptions = puzzle.getSolution().getSolutionSteps().
+                    stream().map(Step::getDescription).collect(Collectors.toCollection(ArrayList::new));
+
+            ArrayList<String> stepsImages = puzzle.getSolution().getSolutionImages()
+                    .stream().map(Image::getPath).collect(Collectors.toCollection(ArrayList::new));
+
+                    puzzleSolutionDto = PuzzleSolutionDto.builder()
+                    .solutionStepsDescription(stepsDescriptions.stream().sorted().collect(Collectors.toList()))
+                    .solutionStepsImagePaths(stepsImages.stream().sorted().collect(Collectors.toList()))
+                    .build();
         } catch (NullPointerException nullPointerException) {
-            puzzleSolutionId = null;
+            puzzleSolutionDto = null;
         }
 
         return PuzzleDescriptionDto.builder()
@@ -319,12 +328,12 @@ public class PuzzleService {
                 .title(puzzle.getTitle())
                 .description(puzzle.getDescription())
                 .difficulty("Level " + puzzle.getDifficulty().getLevel() + " - " + puzzle.getDifficulty().getDisplayName())
-                .solutionId(puzzleSolutionId)
                 .type(puzzle.getType().getName())
                 .brand(puzzle.getBrand())
                 .material(puzzle.getMaterials().stream().map(Material::getName).collect(Collectors.toList()))
                 .imagePath(puzzle.getPuzzleImages().stream().map(Image::getPath).collect(Collectors.toList()))
                 .averageScore(calculatePuzzleAverageRating(puzzle))
+                .solutionDetails(puzzleSolutionDto)
                 .build();
     }
 

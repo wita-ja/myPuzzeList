@@ -18,7 +18,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "STEPS")
-public class Steps {
+public class Step {
 
     @Id
     @GeneratedValue

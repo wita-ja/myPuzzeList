@@ -45,5 +45,5 @@ public class Solution {
             joinColumns = { @JoinColumn(name = "solution_id") },
             inverseJoinColumns = { @JoinColumn(name = "steps_id") }
     )
-    private Set<Steps> solutionSteps;
+    private Set<Step> solutionSteps;
 }
