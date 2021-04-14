@@ -247,7 +247,7 @@ public class PuzzleService {
     public ResponseEntity<Object> submitPuzzle(SubmittedPuzzleDto requestBody) {
         try {
 
-            if(puzzleRepository.findPuzzleByTitle(requestBody.getTitle()).isPresent()) {
+            if (puzzleRepository.findPuzzleByTitle(requestBody.getTitle()).isPresent()) {
                 return new ResponseEntity<>("Puzzle with such title is already submitted", HttpStatus.CONFLICT);
             }
 
@@ -306,13 +306,14 @@ public class PuzzleService {
     }
 
     private PuzzleSolutionStepDto mapToPuzzleSolutionStepDto(String stepsDescription, String stepsImagePath) {
-        return PuzzleSolutionStepDto.builder().StepsDescription(stepsDescription)
-                .StepsImagePath(stepsImagePath)
+        return PuzzleSolutionStepDto.builder().StepDescription(stepsDescription)
+                .StepImagePath(stepsImagePath)
                 .build();
     }
+
     private PuzzleDescriptionDto mapToPuzzleDescriptionDto(Puzzle puzzle) {
 
-        PuzzleSolutionDto puzzleSolutionDto;
+        ArrayList<PuzzleSolutionStepDto> solutionDetails = new ArrayList<>();
         // handlinu null'a jeigu puzzle neturi solutiono (expected result)
         try {
             ArrayList<String> stepsDescriptions = puzzle.getSolution().getSolutionSteps().
@@ -323,24 +324,18 @@ public class PuzzleService {
                     .stream().map(Image::getPath).collect(Collectors.toCollection(ArrayList::new)).stream()
                     .sorted().collect(Collectors.toCollection(ArrayList::new));
 
-            ArrayList<PuzzleSolutionStepDto> solutionDetails = new ArrayList<>();
-
             for (int i = 0; i < stepsDescriptions.size(); i++) {
                 String imagePath;
-                if( stepsImages.size() < i) {
+                if (stepsImages.size() < i) {
                     imagePath = null;
                 } else imagePath = stepsImages.get(i);
 
-                solutionDetails.add(PuzzleSolutionStepDto.builder().StepsDescription(stepsDescriptions.get(i))
-                .StepsImagePath(imagePath).build());
+                solutionDetails.add(PuzzleSolutionStepDto.builder().StepDescription(stepsDescriptions.get(i))
+                        .StepImagePath(imagePath).build());
             }
 
-            puzzleSolutionDto = PuzzleSolutionDto.builder()
-                    .solutionDetails(solutionDetails)
-                    .build();
-
         } catch (NullPointerException nullPointerException) {
-            puzzleSolutionDto = null;
+            solutionDetails = null;
         }
 
         return PuzzleDescriptionDto.builder()
@@ -353,7 +348,7 @@ public class PuzzleService {
                 .material(puzzle.getMaterials().stream().map(Material::getName).collect(Collectors.toList()))
                 .imagePath(puzzle.getPuzzleImages().stream().map(Image::getPath).collect(Collectors.toList()))
                 .averageScore(calculatePuzzleAverageRating(puzzle))
-                .solutionDetails(puzzleSolutionDto)
+                .solutionDetails(solutionDetails)
                 .build();
     }
 
@@ -361,13 +356,17 @@ public class PuzzleService {
         double result = 0.00;
         List<UserPuzzle> userPuzzles = userPuzzleRepository.findAllUserPuzzleByPuzzle(puzzle);
 
-        if (userPuzzles.size() >0) {
+        if (userPuzzles.size() > 0) {
             for (UserPuzzle userPuzzle : userPuzzles
             ) {
-                result = +userPuzzle.getScore();
+                try {
+                    result = +userPuzzle.getScore();
+                } catch (NullPointerException e) {
+                    result = +0.00;
+                }
             }
-            System.out.println(result/userPuzzles.size());
-            return result/userPuzzles.size();
+            System.out.println(result / userPuzzles.size());
+            return result / userPuzzles.size();
         } else return result;
     }
 
@@ -397,7 +396,7 @@ public class PuzzleService {
         if (requestBody.getScore() == null) {
             try {
                 score = userPuzzleRepository.findUserPuzzleById(userPuzzleId).getScore();
-            } catch (DataAccessException e) {
+            } catch (Exception e) {
                 System.out.println(Arrays.toString(e.getStackTrace()));
                 score = null;
             }

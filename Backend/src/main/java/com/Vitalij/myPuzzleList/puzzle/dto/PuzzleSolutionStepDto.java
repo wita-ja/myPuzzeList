@@ -6,6 +6,6 @@ import lombok.Value;
 @Value
 @Builder
 public class PuzzleSolutionStepDto {
-    String StepsDescription;
-    String StepsImagePath;
+    String StepDescription;
+    String StepImagePath;
 }

@@ -1,3 +1,5 @@
+import { PuzzleSolutionStep } from './PuzzleSolutionStep';
+
 export default interface PuzzleDescription {
   id: string;
   title: string;
@@ -8,5 +10,5 @@ export default interface PuzzleDescription {
   material: string[];
   imagePath: string[];
   avgScore: number | string;
-  solutionId: string;
+  solutionDetails: PuzzleSolutionStep[];
 }

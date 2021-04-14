@@ -164,7 +164,7 @@ const PuzzleTable = () => {
                   <Table.Row key={puzzle.id} textAlign='center'>
                     <Table.Cell>
                       <Image
-                        alt={puzzle.title} //TODO probably need to change to proper one title != image name
+                        alt={puzzle.title}
                         src={
                           puzzle.imagePath[0] || '/images/NoImageAvailable.jpg'
                         }

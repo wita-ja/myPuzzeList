@@ -1,4 +1,5 @@
 import useAxios from 'axios-hooks';
+import { isUndefined } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
@@ -13,8 +14,12 @@ import {
   Loader,
   GridColumn,
   Button,
+  List,
+  Confirm,
+  ConfirmProps,
 } from 'semantic-ui-react';
 import PuzzleDescription from '../../dataTypes/PuzzleDescription';
+import { PuzzleSolutionStep } from '../../dataTypes/PuzzleSolutionStep';
 import '../PuzzleDescriptionPage/PuzzleDescriptionPage.styles.css';
 import AddToCollectionModal from './AddToCollectionModal';
 
@@ -26,12 +31,15 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
   let { puzzleId } = useParams<ParamTypes>();
   const [
     { data: getPuzzleData, loading: getPuzzleLoading, error: getPuzzleError },
-  ] = useAxios({
-    url: `http://localhost:8080/api/puzzle/${puzzleId}`,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
+  ] = useAxios(
+    {
+      url: `http://localhost:8080/api/puzzle/${puzzleId}`,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
     },
-  });
+    { useCache: false }
+  );
 
   const [
     {
@@ -39,7 +47,6 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
       loading: getListValidationLoading,
       error: getListValidationError,
     },
-    executeValidation,
   ] = useAxios(
     {
       url: `http://localhost:8080/api/user/${props.username}/validate/collection/${puzzleId}`,
@@ -47,46 +54,66 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
         'Access-Control-Allow-Origin': '*',
       },
     },
-    { manual: true }
+    { useCache: false }
   );
 
-  const [state, setState] = useState(getPuzzleData as PuzzleDescription);
-  const [isLoading, setIsLoading] = useState(true);
+  const [
+    {
+      data: getSolutionStatusData,
+      loading: getSolutionStatusLoading,
+      error: getSolutionStatusError,
+    },
+  ] = useAxios(
+    {
+      url: `http://localhost:8080/api/user/${props.username}/validate/collection/${puzzleId}/isSolutionUnlocked`,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
+    },
+    { useCache: false }
+  );
+
+  const [state, setState] = useState({} as PuzzleDescription);
   const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [allowToAdd, setAllowToAdd] = useState(false);
-  //TODO implement solution viewing
   const [isSolutionUnlocked, setSolutionUnlocked] = useState(false);
+  const [showSolutionUnlockConfirm, setShowSolutionUnlockConfirm] = useState(
+    false
+  );
 
   useEffect(() => {
-    setIsLoading(true);
-
-    if (getPuzzleData) {
+    if (!isUndefined(getPuzzleData as PuzzleDescription)) {
       setState({
         ...state,
         ...getPuzzleData,
       });
+      console.log('Oke');
+    } else {
+      setState({
+        ...state,
+      });
+      console.log('bad');
     }
-    setIsLoading(getPuzzleLoading);
   }, [getPuzzleData]);
 
   useEffect(() => {
     if (showToast === true) {
+      setAllowToAdd(false);
       notify();
       setTimeout(() => setShowToast(false), 3500);
     }
   }, [showToast]);
 
   useEffect(() => {
-    if (props.isLogged && state) {
-      executeValidation();
-      setIsLoading(true);
-      if (getListValidationData) {
-        setAllowToAdd(getListValidationData);
-      }
-      setIsLoading(getListValidationLoading);
-    } else setAllowToAdd(false);
+    if (props.isLogged) {
+      setAllowToAdd(!getListValidationData);
+    }
   }, [getListValidationData]);
+
+  useEffect(() => {
+    setSolutionUnlocked(getSolutionStatusData);
+  }, [getSolutionStatusData]);
 
   const notify = () => {
     toast.success('Puzzle successfully added to your collection!', {
@@ -95,7 +122,15 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
     });
   };
 
-  if ((getPuzzleError && isLoading) || getPuzzleError) {
+  const handleSolutionUnlocking = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    data: ConfirmProps
+  ) => {
+    //TODO proper api call for puzzle solution unlock
+    setShowSolutionUnlockConfirm(false);
+  };
+
+  if ((getPuzzleError && getPuzzleLoading) || getPuzzleError) {
     console.log(getPuzzleError.response?.data);
     return (
       <>
@@ -107,7 +142,8 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
       </>
     );
   }
-  if (isLoading) return <Loader active></Loader>;
+  if (getListValidationLoading || getPuzzleLoading || getSolutionStatusLoading)
+    return <Loader active></Loader>;
   //TODO Implement error page component
 
   return (
@@ -117,7 +153,7 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
         <Grid padded='vertically' columns='2'>
           <Grid.Column width='4'>
             <Image
-              alt={state.title} //TODO probably need to change to proper one title != image name
+              alt={state.title}
               src={state.imagePath[0] || 'images/NoImageAvailable.jpg'}
               size='medium'
               centered
@@ -193,10 +229,56 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
         {props.isLogged && (
           <>
             <Header as='h3' dividing>
-              Puzzle solution - TODO
+              Puzzle solution
             </Header>
-            <p>You didn't buy this puzzle solution yet</p>
-            <Button>Buy puzzle solution</Button>
+            {isSolutionUnlocked && (
+              <>
+                <List>
+                  <List.Content>
+                    {state.solutionDetails.map(
+                      (solution: PuzzleSolutionStep, index) => {
+                        return (
+                          <List.Item>
+                            <p>{solution.stepDescription}</p>
+
+                            <Image
+                              alt={state.title}
+                              src={
+                                solution.stepImagePath ||
+                                'images/NoImageAvailable.jpg'
+                              }
+                              size={index == 1 ? 'small' : 'medium'}
+                            ></Image>
+                          </List.Item>
+                        );
+                      }
+                    )}
+                  </List.Content>
+                </List>
+              </>
+            )}
+
+            {isSolutionUnlocked || (
+              <>
+                <p>Solution is not unlocked</p>
+                <Confirm
+                  open={showSolutionUnlockConfirm}
+                  content='Are you sure you want to unlock puzzle for x Activity points?'
+                  trigger={
+                    <Button
+                      floated='left'
+                      onClick={() => setShowSolutionUnlockConfirm(true)}
+                    >
+                      Unlock Solution
+                    </Button>
+                  }
+                  onCancel={() => setShowSolutionUnlockConfirm(false)}
+                  onConfirm={handleSolutionUnlocking}
+                  confirmButton='Confirm'
+                  size='mini'
+                ></Confirm>
+              </>
+            )}
           </>
         )}
       </>
