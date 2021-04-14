@@ -78,7 +78,7 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
   }, [showToast]);
 
   useEffect(() => {
-    if (props.isLogged) {
+    if (props.isLogged && state) {
       executeValidation();
       setIsLoading(true);
       if (getListValidationData) {
