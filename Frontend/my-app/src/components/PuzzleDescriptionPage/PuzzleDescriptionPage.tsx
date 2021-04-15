@@ -195,11 +195,6 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
     getSolutionStatusLoading ||
     isUndefined(state) == true
   ) {
-    console.log(`list validation: ${getListValidationLoading}, list puzzle: ${getPuzzleLoading}, solutionStatus: ${getSolutionStatusLoading}
-    isUndefined: ${
-      isUndefined(state) == true
-    }, details: ${!state.solutionSteps} `);
-
     return <Loader active></Loader>;
   } else {
     return (
