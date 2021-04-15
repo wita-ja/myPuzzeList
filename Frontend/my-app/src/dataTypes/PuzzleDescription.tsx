@@ -10,5 +10,6 @@ export default interface PuzzleDescription {
   material: string[];
   imagePath: string[];
   avgScore: number | string;
-  solutionDetails: PuzzleSolutionStep[];
+  solutionSteps: PuzzleSolutionStep[];
+  solutionCost: number;
 }

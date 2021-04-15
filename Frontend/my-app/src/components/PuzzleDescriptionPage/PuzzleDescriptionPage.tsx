@@ -1,5 +1,5 @@
 import useAxios from 'axios-hooks';
-import { isUndefined } from 'lodash';
+import { isEmpty, isNull, isUndefined } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
@@ -73,6 +73,24 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
     { useCache: false }
   );
 
+  const [
+    {
+      data: postUnlockSolutionData,
+      loading: postUnlockSolutionLoading,
+      error: postUnlockSolutionError,
+    },
+    executeUnlockPuzzle,
+  ] = useAxios(
+    {
+      url: `http://localhost:8080/api/user/${props.username}/collection/unlockSolution/${puzzleId}`,
+      method: 'PUT',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
+    },
+    { manual: true, useCache: false }
+  );
+
   const [state, setState] = useState({} as PuzzleDescription);
   const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -81,6 +99,7 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
   const [showSolutionUnlockConfirm, setShowSolutionUnlockConfirm] = useState(
     false
   );
+  const [isSolutionExist, setSolutionExist] = useState(false);
 
   useEffect(() => {
     if (!isUndefined(getPuzzleData as PuzzleDescription)) {
@@ -88,22 +107,35 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
         ...state,
         ...getPuzzleData,
       });
+
+      if (getPuzzleData.solutionCost > 0) {
+        setSolutionExist(true);
+      } else setSolutionExist(false);
+
       console.log('Oke');
     } else {
-      setState({
-        ...state,
-      });
       console.log('bad');
     }
   }, [getPuzzleData]);
 
   useEffect(() => {
-    if (showToast === true) {
+    if (showToast === true && isSolutionUnlocked === true) {
+      notifyUnlockSuccesfull();
+      setTimeout(() => setShowToast(false), 3500);
+    } else if (showToast === true) {
       setAllowToAdd(false);
       notify();
       setTimeout(() => setShowToast(false), 3500);
     }
   }, [showToast]);
+
+  useEffect(() => {
+    if (showSolutionUnlockConfirm === false) {
+      setSolutionUnlocked(true);
+      notifyUnlockSuccesfull();
+      setTimeout(() => setShowToast(false), 3500);
+    }
+  }, [showSolutionUnlockConfirm]);
 
   useEffect(() => {
     if (props.isLogged) {
@@ -122,11 +154,25 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
     });
   };
 
+  const notifyUnlockSuccesfull = () => {
+    toast.success('Puzzle solution was successfully unlocked!', {
+      position: 'top-center',
+      autoClose: 3000,
+    });
+  };
+
   const handleSolutionUnlocking = (
     event: React.MouseEvent<HTMLAnchorElement>,
     data: ConfirmProps
   ) => {
-    //TODO proper api call for puzzle solution unlock
+    executeUnlockPuzzle({
+      data: {
+        username: props.username,
+        solutionUnlocked: true,
+      },
+    });
+    setSolutionUnlocked(true);
+
     setShowSolutionUnlockConfirm(false);
   };
 
@@ -142,148 +188,172 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
       </>
     );
   }
-  if (getListValidationLoading || getPuzzleLoading || getSolutionStatusLoading)
+  console.log('state:' + JSON.stringify(state));
+  if (
+    getListValidationLoading ||
+    getPuzzleLoading ||
+    getSolutionStatusLoading ||
+    isUndefined(state) == true
+  ) {
+    console.log(`list validation: ${getListValidationLoading}, list puzzle: ${getPuzzleLoading}, solutionStatus: ${getSolutionStatusLoading}
+    isUndefined: ${
+      isUndefined(state) == true
+    }, details: ${!state.solutionSteps} `);
+
     return <Loader active></Loader>;
+  } else {
+    return (
+      <Container>
+        <ToastContainer position='top-center' autoClose={3000} />
+        <>
+          <Grid padded='vertically' columns='2'>
+            <Grid.Column width='4'>
+              <Image
+                alt={state.title}
+                src={state.imagePath[0] || 'images/NoImageAvailable.jpg'}
+                size='medium'
+                centered
+              ></Image>
+            </Grid.Column>
+            <Grid.Column width='6'>
+              <Header as='h2'>{state.title}</Header>
+              <Divider fitted></Divider>
+              <Header className='PuzzleInfo' size='medium'>
+                Puzzle information
+              </Header>
+              <Grid padded='horizontally' columns='2'>
+                {puzzleInfoLabels.map((el: String) => {
+                  //TODO Simonas Komponentas ane? :D
+                  return (
+                    <Grid.Row>
+                      <Grid.Column
+                        className='infoLabel'
+                        width='3'
+                        color='grey'
+                        textAlign='left'
+                      >
+                        {el}
+                      </Grid.Column>
+
+                      <GridColumn>
+                        {state[
+                          el.toLocaleLowerCase() as keyof PuzzleDescription
+                        ] || 'No information'}
+                      </GridColumn>
+                    </Grid.Row>
+                  );
+                })}
+                <Grid.Row>
+                  <Grid.Column
+                    className='infoLabel'
+                    width='3'
+                    color='grey'
+                    textAlign='left'
+                  >
+                    Materials
+                  </Grid.Column>
+                  <GridColumn>{state.material.join(', ')}</GridColumn>
+                </Grid.Row>
+                <Grid.Row>
+                  {props.isLogged && (
+                    <>
+                      {allowToAdd ? (
+                        <AddToCollectionModal
+                          open={showModal}
+                          onOpen={() => setShowModal(true)}
+                          onClose={() => setShowModal(false)}
+                          onSuccess={() => setShowToast(true)}
+                          trigger={<Button>Add to collection</Button>}
+                          puzzleId={puzzleId}
+                          userName={props.username}
+                          solutionUnlocked={isSolutionUnlocked}
+                        ></AddToCollectionModal>
+                      ) : (
+                        <Button disabled>Already added to collection</Button>
+                      )}
+                    </>
+                  )}
+                </Grid.Row>
+              </Grid>
+            </Grid.Column>
+          </Grid>
+
+          <Header as='h3' dividing>
+            Puzzle description
+          </Header>
+          <p>{state.description}</p>
+          {(props.isLogged && isSolutionExist) || (
+            <>
+              <>
+                <Header as='h3' dividing>
+                  Puzzle solution
+                </Header>
+                <p>No infromation about puzzle solution yet</p>
+              </>
+            </>
+          )}
+
+          {props.isLogged && isSolutionExist && (
+            <>
+              <Header as='h3' dividing>
+                Puzzle solution
+              </Header>
+              {isSolutionUnlocked && (
+                <>
+                  <List>
+                    <List.Content>
+                      {state.solutionSteps.map(
+                        (solution: PuzzleSolutionStep, index) => {
+                          return (
+                            <List.Item>
+                              <p>{solution.stepDescription}</p>
+
+                              <Image
+                                alt={state.title}
+                                src={
+                                  solution.stepImagePath ||
+                                  'images/NoImageAvailable.jpg'
+                                }
+                                size={index == 1 ? 'small' : 'medium'}
+                              ></Image>
+                            </List.Item>
+                          );
+                        }
+                      )}
+                    </List.Content>
+                  </List>
+                </>
+              )}
+
+              {isSolutionUnlocked || (
+                <>
+                  <Confirm
+                    open={showSolutionUnlockConfirm}
+                    content={`Are you sure that you want to unlock this puzzle solution for ${state.solutionCost} activity points?`}
+                    trigger={
+                      <Button
+                        disabled={allowToAdd}
+                        floated='left'
+                        onClick={() => setShowSolutionUnlockConfirm(true)}
+                      >
+                        Unlock puzzle solution
+                      </Button>
+                    }
+                    onCancel={() => setShowSolutionUnlockConfirm(false)}
+                    onConfirm={handleSolutionUnlocking}
+                    confirmButton='Confirm'
+                    size='mini'
+                  ></Confirm>
+                </>
+              )}
+            </>
+          )}
+        </>
+      </Container>
+    );
+  }
+
   //TODO Implement error page component
-
-  return (
-    <Container>
-      <ToastContainer position='top-center' autoClose={3000} />
-      <>
-        <Grid padded='vertically' columns='2'>
-          <Grid.Column width='4'>
-            <Image
-              alt={state.title}
-              src={state.imagePath[0] || 'images/NoImageAvailable.jpg'}
-              size='medium'
-              centered
-            ></Image>
-          </Grid.Column>
-          <Grid.Column width='6'>
-            <Header as='h2'>{state.title}</Header>
-            <Divider fitted></Divider>
-            <Header className='PuzzleInfo' size='medium'>
-              Puzzle information
-            </Header>
-            <Grid padded='horizontally' columns='2'>
-              {puzzleInfoLabels.map((el: String) => {
-                //TODO Simonas Komponentas ane? :D
-                return (
-                  <Grid.Row>
-                    <Grid.Column
-                      className='infoLabel'
-                      width='3'
-                      color='grey'
-                      textAlign='left'
-                    >
-                      {el}
-                    </Grid.Column>
-
-                    <GridColumn>
-                      {state[
-                        el.toLocaleLowerCase() as keyof PuzzleDescription
-                      ] || 'No information'}
-                    </GridColumn>
-                  </Grid.Row>
-                );
-              })}
-              <Grid.Row>
-                <Grid.Column
-                  className='infoLabel'
-                  width='3'
-                  color='grey'
-                  textAlign='left'
-                >
-                  Materials
-                </Grid.Column>
-                <GridColumn>{state.material.join(', ')}</GridColumn>
-              </Grid.Row>
-              <Grid.Row>
-                {props.isLogged && (
-                  <>
-                    {allowToAdd ? (
-                      <AddToCollectionModal
-                        open={showModal}
-                        onOpen={() => setShowModal(true)}
-                        onClose={() => setShowModal(false)}
-                        onSuccess={() => setShowToast(true)}
-                        trigger={<Button>Add to collection</Button>}
-                        puzzleId={puzzleId}
-                        userName={props.username}
-                        solutionUnlocked={isSolutionUnlocked}
-                      ></AddToCollectionModal>
-                    ) : (
-                      <Button disabled>Already added to collection</Button>
-                    )}
-                  </>
-                )}
-              </Grid.Row>
-            </Grid>
-          </Grid.Column>
-        </Grid>
-
-        <Header as='h3' dividing>
-          Puzzle description
-        </Header>
-        <p>{state.description}</p>
-        {props.isLogged && (
-          <>
-            <Header as='h3' dividing>
-              Puzzle solution
-            </Header>
-            {isSolutionUnlocked && (
-              <>
-                <List>
-                  <List.Content>
-                    {state.solutionDetails.map(
-                      (solution: PuzzleSolutionStep, index) => {
-                        return (
-                          <List.Item>
-                            <p>{solution.stepDescription}</p>
-
-                            <Image
-                              alt={state.title}
-                              src={
-                                solution.stepImagePath ||
-                                'images/NoImageAvailable.jpg'
-                              }
-                              size={index == 1 ? 'small' : 'medium'}
-                            ></Image>
-                          </List.Item>
-                        );
-                      }
-                    )}
-                  </List.Content>
-                </List>
-              </>
-            )}
-
-            {isSolutionUnlocked || (
-              <>
-                <p>Solution is not unlocked</p>
-                <Confirm
-                  open={showSolutionUnlockConfirm}
-                  content='Are you sure you want to unlock puzzle for x Activity points?'
-                  trigger={
-                    <Button
-                      floated='left'
-                      onClick={() => setShowSolutionUnlockConfirm(true)}
-                    >
-                      Unlock Solution
-                    </Button>
-                  }
-                  onCancel={() => setShowSolutionUnlockConfirm(false)}
-                  onConfirm={handleSolutionUnlocking}
-                  confirmButton='Confirm'
-                  size='mini'
-                ></Confirm>
-              </>
-            )}
-          </>
-        )}
-      </>
-    </Container>
-  );
 }
 
 const puzzleInfoLabels = ['Type', 'Difficulty', 'Brand'];
