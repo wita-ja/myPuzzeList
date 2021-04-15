@@ -135,7 +135,7 @@ public class PuzzleService {
         }
     }
 
-    public ResponseEntity<Object> updateUserPuzzleDetails(CollectionPuzzleRequestBodyDto requestBody, UUID puzzleId) {
+    public ResponseEntity<Object> updateUserPuzzleDetails(CollectionPuzzleRequestBodyDto requestBody, UUID puzzleId, Boolean unlockSolution) {
         try {
             UserDetails userDetails = userRepository.findUserDetailsByUsername(requestBody.getUsername());
             Puzzle puzzle = puzzleRepository.findPuzzleById(puzzleId);
@@ -145,8 +145,34 @@ public class PuzzleService {
             Boolean deleted = userPuzzleRepository.findUserPuzzleById(userPuzzleId).getDeleted();
 
             UserPuzzle userPuzzleToUpdate = mapToUserPuzzle(puzzle, userDetails, status, requestBody, deleted);
-            userPuzzleRepository.save(userPuzzleToUpdate);
-            return new ResponseEntity<>("Puzzle was succesfully updated", HttpStatus.OK);
+
+            if(unlockSolution && requestBody.getSolutionUnlocked()) {
+
+                if(userPuzzleRepository.findUserPuzzleById(userPuzzleId).getSolutionUnlocked()) {
+                    return new ResponseEntity<>("Puzzle solution already unlocked", HttpStatus.CONFLICT);
+                }
+
+                int userActivityPointsAmount = userDetails.getActivityPoints();
+                int solutionCost;
+
+                try {
+                    solutionCost = puzzle.getSolution().getUnlockCost();
+                } catch (NullPointerException e) {
+                    System.out.println("Error response \n" + e.getMessage());
+                    return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+
+                if( userActivityPointsAmount >= solutionCost) {
+                    userDetails.setActivityPoints(userActivityPointsAmount - solutionCost);
+                    userRepository.save(userDetails);
+                    userPuzzleRepository.save(userPuzzleToUpdate);
+                    return new ResponseEntity<>("Puzzle solution was succesfully unlocked", HttpStatus.OK);
+                } else return new ResponseEntity<>("Not enough activity points to buy", HttpStatus.PRECONDITION_FAILED);
+            } else {
+                userPuzzleRepository.save(userPuzzleToUpdate);
+                return new ResponseEntity<>("Puzzle was succesfully updated", HttpStatus.OK);
+            }
+
 
         } catch (DataAccessException e) {
             System.out.println("Error response \n" + e.getMessage());
@@ -176,6 +202,19 @@ public class PuzzleService {
             UserPuzzle userPuzzle = userPuzzleRepository.findUserPuzzleById(userPuzzleId);
             System.out.println("id: " + puzzleId + ' ' + "puzzleId: " + userPuzzle.getPuzzle().getId());
             return userPuzzle.getPuzzle().getId().equals(puzzleId) && !userPuzzle.getDeleted();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public Boolean isPuzzleSolutionUnlocked(String username, UUID puzzleId) {
+
+        UserDetails userDetails = userRepository.findUserDetailsByUsername(username);
+        UserPuzzleKey userPuzzleId = new UserPuzzleKey(userDetails.getId(), puzzleId);
+        try {
+            UserPuzzle userPuzzle = userPuzzleRepository.findUserPuzzleById(userPuzzleId);
+            System.out.println("id: " + puzzleId + ' ' + "puzzleId: " + userPuzzle.getPuzzle().getId());
+            return userPuzzle.getSolutionUnlocked().equals(true);
         } catch (Exception e) {
             return false;
         }
@@ -221,7 +260,7 @@ public class PuzzleService {
             Path filePath = uploadPath.resolve(Objects.requireNonNull(filename));
             if (!Files.exists(filePath)) {
                 Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-                Image imageToSave = Image.builder().id(UUID.randomUUID()).path("/images/" + filename).temp(true).build();
+                Image imageToSave = Image.builder().id(UUID.randomUUID()).path("/images/" + filename).imageType("puzzle").temp(true).build();
                 imageRepository.save(imageToSave);
                 return new ResponseEntity<>("oke", HttpStatus.CREATED);
             } else throw new IOException();
@@ -234,7 +273,7 @@ public class PuzzleService {
     public ResponseEntity<Object> submitPuzzle(SubmittedPuzzleDto requestBody) {
         try {
 
-            if(puzzleRepository.findPuzzleByTitle(requestBody.getTitle()).isPresent()) {
+            if (puzzleRepository.findPuzzleByTitle(requestBody.getTitle()).isPresent()) {
                 return new ResponseEntity<>("Puzzle with such title is already submitted", HttpStatus.CONFLICT);
             }
 
@@ -292,13 +331,44 @@ public class PuzzleService {
                 .build();
     }
 
+    private PuzzleSolutionStepDto mapToPuzzleSolutionStepDto(String stepsDescription, String stepsImagePath) {
+        return PuzzleSolutionStepDto.builder().StepDescription(stepsDescription)
+                .StepImagePath(stepsImagePath)
+                .build();
+    }
+
     private PuzzleDescriptionDto mapToPuzzleDescriptionDto(Puzzle puzzle) {
-        UUID puzzleSolutionId;
+
+        ArrayList<PuzzleSolutionStepDto> solutionSteps = new ArrayList<>();
         // handlinu null'a jeigu puzzle neturi solutiono (expected result)
         try {
-            puzzleSolutionId = puzzle.getSolution().getId();
+            ArrayList<String> stepsDescriptions = puzzle.getSolution().getSolutionSteps().
+                    stream().map(Step::getDescription).collect(Collectors.toCollection(ArrayList::new)).stream()
+                    .sorted().collect(Collectors.toCollection(ArrayList::new));
+
+            ArrayList<String> stepsImages = puzzle.getSolution().getSolutionImages()
+                    .stream().map(Image::getPath).collect(Collectors.toCollection(ArrayList::new)).stream()
+                    .sorted().collect(Collectors.toCollection(ArrayList::new));
+
+            for (int i = 0; i < stepsDescriptions.size(); i++) {
+                String imagePath;
+                if (stepsImages.size() < i) {
+                    imagePath = null;
+                } else imagePath = stepsImages.get(i);
+
+                solutionSteps.add(PuzzleSolutionStepDto.builder().StepDescription(stepsDescriptions.get(i))
+                        .StepImagePath(imagePath).build());
+            }
+
         } catch (NullPointerException nullPointerException) {
-            puzzleSolutionId = null;
+            solutionSteps = null;
+        }
+
+        Integer solutionCost;
+        try {
+            solutionCost = puzzle.getSolution().getUnlockCost();
+        } catch (NullPointerException e) {
+            solutionCost = null;
         }
 
         return PuzzleDescriptionDto.builder()
@@ -306,12 +376,13 @@ public class PuzzleService {
                 .title(puzzle.getTitle())
                 .description(puzzle.getDescription())
                 .difficulty("Level " + puzzle.getDifficulty().getLevel() + " - " + puzzle.getDifficulty().getDisplayName())
-                .solutionId(puzzleSolutionId)
                 .type(puzzle.getType().getName())
                 .brand(puzzle.getBrand())
                 .material(puzzle.getMaterials().stream().map(Material::getName).collect(Collectors.toList()))
                 .imagePath(puzzle.getPuzzleImages().stream().map(Image::getPath).collect(Collectors.toList()))
                 .averageScore(calculatePuzzleAverageRating(puzzle))
+                .solutionSteps(solutionSteps)
+                .solutionCost(solutionCost)
                 .build();
     }
 
@@ -319,13 +390,18 @@ public class PuzzleService {
         double result = 0.00;
         List<UserPuzzle> userPuzzles = userPuzzleRepository.findAllUserPuzzleByPuzzle(puzzle);
 
-        for (UserPuzzle userPuzzle: userPuzzles
-             ) {
-            result =+ userPuzzle.getScore();
-        }
-
-        System.out.println(result/userPuzzles.size());
-        return result/userPuzzles.size();
+        if (userPuzzles.size() > 0) {
+            for (UserPuzzle userPuzzle : userPuzzles
+            ) {
+                try {
+                    result = +userPuzzle.getScore();
+                } catch (NullPointerException e) {
+                    result = +0.00;
+                }
+            }
+            System.out.println(result / userPuzzles.size());
+            return result / userPuzzles.size();
+        } else return result;
     }
 
     private CollectionPuzzleDto mapToCollectionPuzzleDto(UserPuzzle userPuzzle) {
@@ -354,7 +430,7 @@ public class PuzzleService {
         if (requestBody.getScore() == null) {
             try {
                 score = userPuzzleRepository.findUserPuzzleById(userPuzzleId).getScore();
-            } catch (DataAccessException e) {
+            } catch (Exception e) {
                 System.out.println(Arrays.toString(e.getStackTrace()));
                 score = null;
             }

@@ -1,10 +1,7 @@
 package com.Vitalij.myPuzzleList.user.model;
 
 import com.Vitalij.myPuzzleList.puzzle.model.UserPuzzle;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
@@ -14,6 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
+@Setter
 @ToString
 @SuperBuilder
 @NoArgsConstructor

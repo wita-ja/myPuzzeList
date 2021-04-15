@@ -77,7 +77,7 @@ public class UserController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/{username}/collection/edit/{puzzleId}")
     public ResponseEntity<Object> updateCollectionPuzzleDetails(@RequestBody CollectionPuzzleRequestBodyDto requestBody, @PathVariable UUID puzzleId) {
-        return puzzleService.updateUserPuzzleDetails(requestBody, puzzleId);
+        return puzzleService.updateUserPuzzleDetails(requestBody, puzzleId, false);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
@@ -96,5 +96,20 @@ public class UserController {
             @PathVariable UUID puzzleId
     ) {
         return puzzleService.getUserPuzzleDetails(username, puzzleId);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping(value = "/{username}/validate/collection/{puzzleId}/isSolutionUnlocked")
+    public Boolean isPuzzleSolutionUnlocked(
+            @PathVariable String username,
+            @PathVariable UUID puzzleId
+    ) {
+        return puzzleService.isPuzzleSolutionUnlocked(username, puzzleId);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/{username}/collection/unlockSolution/{puzzleId}")
+    public ResponseEntity<Object> unlockPuzzleSolution(@RequestBody CollectionPuzzleRequestBodyDto requestBody, @PathVariable UUID puzzleId) {
+        return puzzleService.updateUserPuzzleDetails(requestBody, puzzleId, true);
     }
 }

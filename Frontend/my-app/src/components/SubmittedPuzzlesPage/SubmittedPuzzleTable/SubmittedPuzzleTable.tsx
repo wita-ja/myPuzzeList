@@ -157,7 +157,7 @@ const SubmittedPuzzleTable = () => {
                     <Table.Row key={submittedPuzzle.id} textAlign='center'>
                       <Table.Cell>
                         <Image
-                          alt={submittedPuzzle.title} //TODO probably need to change to proper one title != image name
+                          alt={submittedPuzzle.title}
                           src={
                             submittedPuzzle.imagePath[0] ||
                             'images/NoImageAvailable.jpg'
