@@ -260,7 +260,7 @@ public class PuzzleService {
             Path filePath = uploadPath.resolve(Objects.requireNonNull(filename));
             if (!Files.exists(filePath)) {
                 Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-                Image imageToSave = Image.builder().id(UUID.randomUUID()).path("/images/" + filename).temp(true).build();
+                Image imageToSave = Image.builder().id(UUID.randomUUID()).path("/images/" + filename).imageType("puzzle").temp(true).build();
                 imageRepository.save(imageToSave);
                 return new ResponseEntity<>("oke", HttpStatus.CREATED);
             } else throw new IOException();

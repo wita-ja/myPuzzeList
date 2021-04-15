@@ -231,8 +231,6 @@ const SubmitPuzzleModal = (props: SubmitPuzzleModalProps) => {
   const handleSubmit = async (event: React.MouseEvent) => {
     event.preventDefault();
 
-    setImageUploading(true);
-
     const formData = new FormData();
     formData.append('file', uploadedImageInfo.imageFile[0]);
 
@@ -247,13 +245,13 @@ const SubmitPuzzleModal = (props: SubmitPuzzleModalProps) => {
       }
     );
 
-    setImageUploading(false);
     console.log('image status: ' + imageUploadResponse.status);
 
-    if (imageUploadResponse.status == 201 && !imageUploading) {
+    if (imageUploadResponse.status == 201) {
       const materials: string[] = puzzleToSubmit.materials.map((el) => {
         return el[0];
       });
+
       const response = await executePuzzlePost({
         data: {
           title: puzzleToSubmit.title,
