@@ -135,7 +135,7 @@ public class PuzzleService {
         }
     }
 
-    public ResponseEntity<Object> updateUserPuzzleDetails(CollectionPuzzleRequestBodyDto requestBody, UUID puzzleId) {
+    public ResponseEntity<Object> updateUserPuzzleDetails(CollectionPuzzleRequestBodyDto requestBody, UUID puzzleId, Boolean unlockSolution) {
         try {
             UserDetails userDetails = userRepository.findUserDetailsByUsername(requestBody.getUsername());
             Puzzle puzzle = puzzleRepository.findPuzzleById(puzzleId);
@@ -145,8 +145,34 @@ public class PuzzleService {
             Boolean deleted = userPuzzleRepository.findUserPuzzleById(userPuzzleId).getDeleted();
 
             UserPuzzle userPuzzleToUpdate = mapToUserPuzzle(puzzle, userDetails, status, requestBody, deleted);
-            userPuzzleRepository.save(userPuzzleToUpdate);
-            return new ResponseEntity<>("Puzzle was succesfully updated", HttpStatus.OK);
+
+            if(unlockSolution && requestBody.getSolutionUnlocked()) {
+
+                if(userPuzzleRepository.findUserPuzzleById(userPuzzleId).getSolutionUnlocked()) {
+                    return new ResponseEntity<>("Puzzle solution already unlocked", HttpStatus.CONFLICT);
+                }
+
+                int userActivityPointsAmount = userDetails.getActivityPoints();
+                int solutionCost;
+
+                try {
+                    solutionCost = puzzle.getSolution().getUnlockCost();
+                } catch (NullPointerException e) {
+                    System.out.println("Error response \n" + e.getMessage());
+                    return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+
+                if( userActivityPointsAmount >= solutionCost) {
+                    userDetails.setActivityPoints(userActivityPointsAmount - solutionCost);
+                    userRepository.save(userDetails);
+                    userPuzzleRepository.save(userPuzzleToUpdate);
+                    return new ResponseEntity<>("Puzzle solution was succesfully unlocked", HttpStatus.OK);
+                } else return new ResponseEntity<>("Not enough activity points to buy", HttpStatus.PRECONDITION_FAILED);
+            } else {
+                userPuzzleRepository.save(userPuzzleToUpdate);
+                return new ResponseEntity<>("Puzzle was succesfully updated", HttpStatus.OK);
+            }
+
 
         } catch (DataAccessException e) {
             System.out.println("Error response \n" + e.getMessage());
