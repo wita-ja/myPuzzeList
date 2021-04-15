@@ -339,7 +339,7 @@ public class PuzzleService {
 
     private PuzzleDescriptionDto mapToPuzzleDescriptionDto(Puzzle puzzle) {
 
-        ArrayList<PuzzleSolutionStepDto> solutionDetails = new ArrayList<>();
+        ArrayList<PuzzleSolutionStepDto> solutionSteps = new ArrayList<>();
         // handlinu null'a jeigu puzzle neturi solutiono (expected result)
         try {
             ArrayList<String> stepsDescriptions = puzzle.getSolution().getSolutionSteps().
@@ -356,12 +356,19 @@ public class PuzzleService {
                     imagePath = null;
                 } else imagePath = stepsImages.get(i);
 
-                solutionDetails.add(PuzzleSolutionStepDto.builder().StepDescription(stepsDescriptions.get(i))
+                solutionSteps.add(PuzzleSolutionStepDto.builder().StepDescription(stepsDescriptions.get(i))
                         .StepImagePath(imagePath).build());
             }
 
         } catch (NullPointerException nullPointerException) {
-            solutionDetails = null;
+            solutionSteps = null;
+        }
+
+        Integer solutionCost;
+        try {
+            solutionCost = puzzle.getSolution().getUnlockCost();
+        } catch (NullPointerException e) {
+            solutionCost = null;
         }
 
         return PuzzleDescriptionDto.builder()
@@ -374,7 +381,8 @@ public class PuzzleService {
                 .material(puzzle.getMaterials().stream().map(Material::getName).collect(Collectors.toList()))
                 .imagePath(puzzle.getPuzzleImages().stream().map(Image::getPath).collect(Collectors.toList()))
                 .averageScore(calculatePuzzleAverageRating(puzzle))
-                .solutionDetails(solutionDetails)
+                .solutionSteps(solutionSteps)
+                .solutionCost(solutionCost)
                 .build();
     }
 

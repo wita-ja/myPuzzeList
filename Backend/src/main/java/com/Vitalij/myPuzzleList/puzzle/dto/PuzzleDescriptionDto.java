@@ -18,5 +18,6 @@ public class PuzzleDescriptionDto {
     List<String> material;
     List<String> imagePath;
     Double averageScore;
-    List<PuzzleSolutionStepDto> solutionDetails;
+    List<PuzzleSolutionStepDto> solutionSteps;
+    Integer solutionCost;
 }
