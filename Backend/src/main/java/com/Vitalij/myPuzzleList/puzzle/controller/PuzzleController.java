@@ -14,6 +14,7 @@ import java.util.UUID;
 import static java.util.Objects.isNull;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/puzzle/")
 public class PuzzleController {
     private final PuzzleService puzzleService;
@@ -22,7 +23,7 @@ public class PuzzleController {
         this.puzzleService = puzzleService;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    //@CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/getAll")
     public Page<PuzzleSummaryDto> getAllPuzzleSummaries(
             @RequestParam(defaultValue = "1", name = "page") Integer pageNo,
@@ -34,7 +35,7 @@ public class PuzzleController {
         return puzzleService.getPuzzleSummaries(pageable);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    //@CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/{id}")
     public PuzzleDescriptionDto getPuzzleDescriptionByID(
             @PathVariable UUID id
@@ -42,7 +43,7 @@ public class PuzzleController {
         return puzzleService.getPuzzleDescription(id);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+
     @GetMapping(value = "/submitted/{id}")
     public SubmittedPuzzleDto getSubmittedPuzzleDescriptionByID(
             @PathVariable UUID id
@@ -50,7 +51,7 @@ public class PuzzleController {
         return puzzleService.getSubmittedPuzzleDescription(id);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    //@CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/getStatuses")
     public List<PuzzleStatusDto> getPuzzleStatuses(
     ) {
@@ -58,7 +59,7 @@ public class PuzzleController {
     }
 
     //TODO pakeisti i 25 irasus per psl
-    @CrossOrigin(origins = "http://localhost:3000")
+    //@CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/getAllSubmitted")
     public Page<SubmittedPuzzleDto> getAllSubmittedPuzzleSummaries(
             @RequestParam(defaultValue = "1", name = "page") Integer pageNo,
@@ -70,7 +71,7 @@ public class PuzzleController {
         return puzzleService.getSubmittedPuzzleSummaries(pageable);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    //@CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/submitted/{puzzleId}/changeVisibility")
     public ResponseEntity<Object> updateSubmittedPuzzleVisibility(@RequestBody SubmittedPuzzleVisibilityRequestBodyDto requestBody, @PathVariable UUID puzzleId) {
 
@@ -80,28 +81,28 @@ public class PuzzleController {
         return puzzleService.updateSubmittedPuzzleVisibility(requestBody, puzzleId);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    //@CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/getDifficulties")
     public List<PuzzleDifficultyDto> getPuzzleDifficulties(
     ) {
         return puzzleService.getPuzzleDifficulties();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+   // @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/getTypes")
     public List<PuzzleTypeDto> getPuzzleTypes(
     ) {
         return puzzleService.getPuzzleTypes();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    //@CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/getMaterials")
     public List<PuzzleMaterialDto> getPuzzleMaterials(
     ) {
         return puzzleService.getPuzzleMaterials();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    //@CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/saveImage")
     public ResponseEntity<Object> savePuzzleToCollection(
             @RequestParam(name = "file") MultipartFile file
@@ -109,7 +110,7 @@ public class PuzzleController {
         return puzzleService.saveImage(file);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    //@CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/submitPuzzle")
     public ResponseEntity<Object> savePuzzleToCollection(@RequestBody SubmittedPuzzleDto requestBody) {
         return puzzleService.submitPuzzle(requestBody);
