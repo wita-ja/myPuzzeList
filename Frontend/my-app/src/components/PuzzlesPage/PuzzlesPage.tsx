@@ -10,7 +10,7 @@ import {
 import PuzzleTable from './PuzzleTable';
 import SubmitPuzzleModal from './SubmitPuzzleModal';
 
-const PuzzlesPage = () => {
+const PuzzlesPage = (props: { isLogged: boolean }) => {
   const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
@@ -38,13 +38,15 @@ const PuzzlesPage = () => {
               <h1>Puzzle List</h1>
             </GridColumn>
             <GridColumn>
-              <SubmitPuzzleModal
-                open={showModal}
-                onOpen={() => setShowModal(true)}
-                onClose={() => setShowModal(false)}
-                onSuccess={() => setShowToast(true)}
-                trigger={<Button floated={'right'}>Submit puzzle</Button>}
-              ></SubmitPuzzleModal>
+              {props.isLogged && (
+                <SubmitPuzzleModal
+                  open={showModal}
+                  onOpen={() => setShowModal(true)}
+                  onClose={() => setShowModal(false)}
+                  onSuccess={() => setShowToast(true)}
+                  trigger={<Button floated={'right'}>Submit puzzle</Button>}
+                ></SubmitPuzzleModal>
+              )}
             </GridColumn>
           </GridRow>
         </Grid>

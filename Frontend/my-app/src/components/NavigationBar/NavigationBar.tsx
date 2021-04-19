@@ -1,48 +1,61 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, Dropdown, Button } from 'semantic-ui-react';
+import LoginModal from './LoginModal';
 
 interface NavigationBarProps {
-  isLogged: boolean;
-  username: string;
-  userRole: string;
+  setUserRole: (value: React.SetStateAction<string>) => void;
+  setUserName: (value: React.SetStateAction<string>) => void;
+  setIsLogged: (value: React.SetStateAction<boolean>) => void;
 }
 
 const NavigationBar = (props: NavigationBarProps) => {
-  const [isLogged, setLogged] = useState(props.isLogged);
+  const [isLogged, setIsLogged] = useState(false);
+  const [userRole, setUserRole] = useState('');
+  const [username, setUsername] = useState('');
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    props.setIsLogged(isLogged);
+  }, [isLogged]);
+
+  useEffect(() => {
+    props.setUserName(username);
+  }, [username]);
+
+  useEffect(() => {
+    props.setUserRole(userRole);
+  }, [userRole]);
 
   return (
     <Menu color='grey' fluid>
       <Menu.Item as={Link} to='/'>
         Puzzles
       </Menu.Item>
-      {props.userRole == 'Admin' && (
+      {isLogged && userRole == 'Admin' && (
         <Menu.Item as={Link} to='/submittedPuzzles/1'>
           Submitted Puzzles
         </Menu.Item>
       )}
-      {props.isLogged && (
+      {isLogged && (
         <Menu.Item position='right'>
-          <Dropdown text={props.username} pointing='top right'>
+          <Dropdown text={username} pointing='top right'>
             <Dropdown.Menu>
               <Dropdown.Item
                 as={Link}
-                to={`/user/${props.username}/collection/page/1`}
+                to={`/user/${username}/collection/page/1`}
               >
                 My collection
               </Dropdown.Item>
-              <Dropdown.Item as={Link} to={`/user/${props.username}`}>
+              <Dropdown.Item as={Link} to={`/user/${username}`}>
                 My profile
               </Dropdown.Item>
               <Dropdown.Item
                 as={Link}
                 to='/'
-                onClick={
-                  //TODO find way to pass it to parent
-                  () => {
-                    setLogged(!isLogged);
-                  }
-                }
+                onClick={() => {
+                  setIsLogged(!isLogged);
+                }}
               >
                 Log out
               </Dropdown.Item>
@@ -50,13 +63,21 @@ const NavigationBar = (props: NavigationBarProps) => {
           </Dropdown>
         </Menu.Item>
       )}
-      {!props.isLogged && (
+      {!isLogged && (
         <Menu.Menu position='right'>
-          <Menu.Item>
+          <Menu.Item position='right'>
             <Button>Sign up</Button>
           </Menu.Item>
-          <Menu.Item>
-            <Button>Log in</Button>
+          <Menu.Item position='right'>
+            <LoginModal
+              open={showModal}
+              onOpen={() => setShowModal(true)}
+              onClose={() => setShowModal(false)}
+              setUserName={(value) => setUsername(value)}
+              setIsLogged={(value) => setIsLogged(value)}
+              setUserRole={(value) => setUserRole(value)}
+              trigger={<Button>Log in</Button>}
+            ></LoginModal>
           </Menu.Item>
         </Menu.Menu>
       )}
