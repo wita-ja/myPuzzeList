@@ -3,6 +3,8 @@ package com.Vitalij.myPuzzleList.user.model;
 import com.Vitalij.myPuzzleList.puzzle.model.UserPuzzle;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -12,12 +14,14 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "password")
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "USER_DETAILS")
 public class UserDetails {
+
+    public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
     @Id
     @GeneratedValue
@@ -52,4 +56,12 @@ public class UserDetails {
 
     @Column(name = "AGE_GROUP", nullable = false)
     private String age_group;
+
+    public void setPassword(String password) {
+        this.password = PASSWORD_ENCODER.encode(password);
+    }
+
+    public PasswordEncoder getEncoder() {
+       return PASSWORD_ENCODER;
+    }
 }

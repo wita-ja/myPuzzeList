@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   BrowserRouter as Router,
   Link,
@@ -20,22 +20,26 @@ import SubmittedPuzzleDescriptionPage from '../SubmittedPuzzleDescriptionPage';
 
 //after login set isLogged true and username
 //after logout set isLogged to false and username to ''
-const isLogged: boolean = true;
+const isLogged: boolean = false;
 let username: string = TestingUsersUsername.admin;
 const userRole: string = 'Admin';
 
 //TODO patikrinti / ir redirect'a
 function App() {
+  const [isLogged, setIsLogged] = useState(false);
+  const [userRole, setUserRole] = useState('');
+  const [username, setUsername] = useState('');
+
   return (
     <Router>
       <GlobalHeader
-        isLogged={isLogged}
-        username={username}
-        userRole={userRole}
+        setIsLogged={(value) => setIsLogged(value)}
+        setUserName={(value) => setUsername(value)}
+        setUserRole={(value) => setUserRole(value)}
       ></GlobalHeader>
       <Switch>
         <Route path='/puzzles/:page'>
-          <PuzzlesPage />
+          <PuzzlesPage isLogged={isLogged} />
         </Route>
         <Route path='/submittedPuzzles/:page'>
           <SubmittedPuzzlePage />

@@ -302,6 +302,8 @@ public class PuzzleService {
         }
     }
 
+
+
     private PuzzleSummaryDto mapToPuzzleSummaryDto(Puzzle puzzle) {
         return PuzzleSummaryDto.builder()
                 .id(puzzle.getId())

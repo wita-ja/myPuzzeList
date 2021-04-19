@@ -4,6 +4,8 @@ package com.Vitalij.myPuzzleList.user.controller;
 import com.Vitalij.myPuzzleList.puzzle.dto.CollectionPuzzleDto;
 import com.Vitalij.myPuzzleList.puzzle.dto.CollectionPuzzleRequestBodyDto;
 import com.Vitalij.myPuzzleList.puzzle.service.PuzzleService;
+import com.Vitalij.myPuzzleList.user.dto.LoginRequestDto;
+import com.Vitalij.myPuzzleList.user.dto.LoginResponseDto;
 import com.Vitalij.myPuzzleList.user.dto.UserDetailsDto;
 import com.Vitalij.myPuzzleList.user.service.UserService;
 import org.springframework.data.domain.Page;
@@ -19,6 +21,7 @@ import java.util.UUID;
 import static java.util.Objects.isNull;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/user/")
 public class UserController {
     private final UserService userService;
@@ -29,7 +32,7 @@ public class UserController {
         this.puzzleService = puzzleService;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+
     @GetMapping(value = "/{username}")
     public UserDetailsDto getUserDetails(
             @PathVariable String username
@@ -38,7 +41,7 @@ public class UserController {
     }
 
     //TODO change size to 25
-    @CrossOrigin(origins = "http://localhost:3000")
+
     @GetMapping(value = "/{username}/collection")
     public Page<CollectionPuzzleDto> getUserCollectionDetails(
             @PathVariable String username,
@@ -52,7 +55,6 @@ public class UserController {
         return puzzleService.getUserCollectionPuzzles(username, pageable);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/{username}/validate/collection/{puzzleId}")
     public Boolean isPuzzleInUserCollection(
             @PathVariable String username,
@@ -61,7 +63,6 @@ public class UserController {
         return puzzleService.isPuzzlePresentInUserCollection(username, puzzleId);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/{username}/collection/add/{puzzleId}")
     public ResponseEntity<Object> savePuzzleToCollection(@RequestBody CollectionPuzzleRequestBodyDto requestBody, @PathVariable UUID puzzleId) {
 
@@ -74,13 +75,11 @@ public class UserController {
         } else return puzzleService.addUserPuzzleCollection(requestBody, puzzleId);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/{username}/collection/edit/{puzzleId}")
     public ResponseEntity<Object> updateCollectionPuzzleDetails(@RequestBody CollectionPuzzleRequestBodyDto requestBody, @PathVariable UUID puzzleId) {
         return puzzleService.updateUserPuzzleDetails(requestBody, puzzleId, false);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @DeleteMapping(value = "{username}/collection/delete/{puzzleId}")
     public ResponseEntity<Object> deleteCollectionPuzzle(
             @PathVariable String username,
@@ -89,7 +88,6 @@ public class UserController {
         return puzzleService.deleteUserPuzzle(username, puzzleId);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "{username}/collection/{puzzleId}")
     public CollectionPuzzleRequestBodyDto getUserPuzzleDetails(
             @PathVariable String username,
@@ -98,7 +96,6 @@ public class UserController {
         return puzzleService.getUserPuzzleDetails(username, puzzleId);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/{username}/validate/collection/{puzzleId}/isSolutionUnlocked")
     public Boolean isPuzzleSolutionUnlocked(
             @PathVariable String username,
@@ -107,9 +104,24 @@ public class UserController {
         return puzzleService.isPuzzleSolutionUnlocked(username, puzzleId);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/{username}/collection/unlockSolution/{puzzleId}")
     public ResponseEntity<Object> unlockPuzzleSolution(@RequestBody CollectionPuzzleRequestBodyDto requestBody, @PathVariable UUID puzzleId) {
         return puzzleService.updateUserPuzzleDetails(requestBody, puzzleId, true);
+    }
+
+    @PostMapping(value = "/login")
+    public LoginResponseDto logIn(
+           @RequestBody LoginRequestDto requestBody
+    ) {
+        HttpStatus userCanLogin = userService.userDataIsCorrect(requestBody).getStatusCode();
+        if (userCanLogin == HttpStatus.OK) {
+            return LoginResponseDto.builder()
+                    .loggedIn(true)
+                    .username(requestBody.getUsername())
+                    .userRole(userService.getUserDetails(requestBody.getUsername()).getRole())
+                    .build();
+        } else return LoginResponseDto.builder()
+                .loggedIn(false)
+                .build();
     }
 }
