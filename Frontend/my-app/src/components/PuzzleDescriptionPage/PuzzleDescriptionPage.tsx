@@ -47,6 +47,7 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
       loading: getListValidationLoading,
       error: getListValidationError,
     },
+    executeGetListValidationData,
   ] = useAxios(
     {
       url: `http://localhost:8080/api/user/${props.username}/validate/collection/${puzzleId}`,
@@ -54,7 +55,7 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
         'Access-Control-Allow-Origin': '*',
       },
     },
-    { useCache: false }
+    { useCache: false, manual: true }
   );
 
   const [
@@ -63,6 +64,7 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
       loading: getSolutionStatusLoading,
       error: getSolutionStatusError,
     },
+    executeGetSolutionStatusData,
   ] = useAxios(
     {
       url: `http://localhost:8080/api/user/${props.username}/validate/collection/${puzzleId}/isSolutionUnlocked`,
@@ -70,7 +72,7 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
         'Access-Control-Allow-Origin': '*',
       },
     },
-    { useCache: false }
+    { useCache: false, manual: true }
   );
 
   const [
@@ -147,6 +149,13 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
     setSolutionUnlocked(getSolutionStatusData);
   }, [getSolutionStatusData]);
 
+  useEffect(() => {
+    if (props.isLogged == true) {
+      executeGetSolutionStatusData();
+      executeGetListValidationData();
+    }
+  }, []);
+
   const notify = () => {
     toast.success('Puzzle successfully added to your collection!', {
       position: 'top-center',
@@ -193,7 +202,8 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
     getListValidationLoading ||
     getPuzzleLoading ||
     getSolutionStatusLoading ||
-    isUndefined(state) == true
+    isUndefined(state) == true ||
+    isEmpty(state.imagePath)
   ) {
     return <Loader active></Loader>;
   } else {

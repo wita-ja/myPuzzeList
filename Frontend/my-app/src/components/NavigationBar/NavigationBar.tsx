@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
 import { Menu, Dropdown, Button } from 'semantic-ui-react';
 import LoginModal from './LoginModal';
+import SignUpModal from './SignUpModal';
 
 interface NavigationBarProps {
   setUserRole: (value: React.SetStateAction<string>) => void;
@@ -13,7 +15,9 @@ const NavigationBar = (props: NavigationBarProps) => {
   const [isLogged, setIsLogged] = useState(false);
   const [userRole, setUserRole] = useState('');
   const [username, setUsername] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
+  const [showUserCreatedToast, setShowUserCreatedToast] = useState(false);
 
   useEffect(() => {
     props.setIsLogged(isLogged);
@@ -27,8 +31,23 @@ const NavigationBar = (props: NavigationBarProps) => {
     props.setUserRole(userRole);
   }, [userRole]);
 
+  useEffect(() => {
+    if (showUserCreatedToast === true) {
+      notify();
+      setTimeout(() => setShowUserCreatedToast(false), 3500);
+    }
+  }, [showUserCreatedToast]);
+
+  const notify = () => {
+    toast.success('User was  successfully created!', {
+      position: 'top-center',
+      autoClose: 3000,
+    });
+  };
+
   return (
     <Menu color='grey' fluid>
+      <ToastContainer position='top-center' autoClose={3000} />
       <Menu.Item as={Link} to='/'>
         Puzzles
       </Menu.Item>
@@ -66,13 +85,19 @@ const NavigationBar = (props: NavigationBarProps) => {
       {!isLogged && (
         <Menu.Menu position='right'>
           <Menu.Item position='right'>
-            <Button>Sign up</Button>
+            <SignUpModal
+              open={showSignUpModal}
+              onOpen={() => setShowSignUpModal(true)}
+              onClose={() => setShowSignUpModal(false)}
+              onSuccess={() => setShowUserCreatedToast(true)}
+              trigger={<Button>Sign up</Button>}
+            ></SignUpModal>
           </Menu.Item>
           <Menu.Item position='right'>
             <LoginModal
-              open={showModal}
-              onOpen={() => setShowModal(true)}
-              onClose={() => setShowModal(false)}
+              open={showLoginModal}
+              onOpen={() => setShowLoginModal(true)}
+              onClose={() => setShowLoginModal(false)}
               setUserName={(value) => setUsername(value)}
               setIsLogged={(value) => setIsLogged(value)}
               setUserRole={(value) => setUserRole(value)}

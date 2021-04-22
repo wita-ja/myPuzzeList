@@ -18,13 +18,6 @@ import UserPuzzlesPage from '../UserPuzzlesPage';
 import SubmittedPuzzlePage from '../SubmittedPuzzlesPage';
 import SubmittedPuzzleDescriptionPage from '../SubmittedPuzzleDescriptionPage';
 
-//after login set isLogged true and username
-//after logout set isLogged to false and username to ''
-const isLogged: boolean = false;
-let username: string = TestingUsersUsername.admin;
-const userRole: string = 'Admin';
-
-//TODO patikrinti / ir redirect'a
 function App() {
   const [isLogged, setIsLogged] = useState(false);
   const [userRole, setUserRole] = useState('');

@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios';
 import useAxios from 'axios-hooks';
 import React, { useEffect, useState } from 'react';
 import {
@@ -114,7 +113,6 @@ const LoginModal = (props: LoginModalProps) => {
 
   return (
     <Modal
-      as={Form}
       open={open}
       onClose={onModalClose}
       onOpen={onOpen}
