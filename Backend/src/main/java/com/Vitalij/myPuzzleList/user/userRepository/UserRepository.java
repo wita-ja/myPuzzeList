@@ -1,4 +1,4 @@
-package com.Vitalij.myPuzzleList.user.repository;
+package com.Vitalij.myPuzzleList.user.userRepository;
 
 import com.Vitalij.myPuzzleList.user.model.UserDetails;
 import org.springframework.data.jpa.repository.JpaRepository;

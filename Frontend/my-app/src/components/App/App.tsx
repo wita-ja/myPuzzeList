@@ -35,7 +35,11 @@ function App() {
           <PuzzlesPage isLogged={isLogged} />
         </Route>
         <Route path='/submittedPuzzles/:page'>
-          <SubmittedPuzzlePage />
+          {isLogged && userRole == 'Admin' ? (
+            <SubmittedPuzzlePage />
+          ) : (
+            <Redirect to={{ pathname: '/notFound' }} />
+          )}
         </Route>
         <Route path='/login'>
           <h2>Login page/modal </h2>

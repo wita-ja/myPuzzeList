@@ -1,10 +1,10 @@
 package com.Vitalij.myPuzzleList.puzzle.service;
 
-import com.Vitalij.myPuzzleList.puzzle.dto.*;
+import com.Vitalij.myPuzzleList.puzzle.puzzleDto.*;
 import com.Vitalij.myPuzzleList.puzzle.model.*;
-import com.Vitalij.myPuzzleList.puzzle.repository.*;
+import com.Vitalij.myPuzzleList.puzzle.puzzleRepository.*;
 import com.Vitalij.myPuzzleList.user.model.UserDetails;
-import com.Vitalij.myPuzzleList.user.repository.UserRepository;
+import com.Vitalij.myPuzzleList.user.userRepository.UserRepository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;

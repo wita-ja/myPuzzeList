@@ -1,12 +1,12 @@
 package com.Vitalij.myPuzzleList.user.controller;
 
 
-import com.Vitalij.myPuzzleList.puzzle.dto.CollectionPuzzleDto;
-import com.Vitalij.myPuzzleList.puzzle.dto.CollectionPuzzleRequestBodyDto;
+import com.Vitalij.myPuzzleList.puzzle.puzzleDto.CollectionPuzzleDto;
+import com.Vitalij.myPuzzleList.puzzle.puzzleDto.CollectionPuzzleRequestBodyDto;
 import com.Vitalij.myPuzzleList.puzzle.service.PuzzleService;
-import com.Vitalij.myPuzzleList.user.dto.LoginRequestDto;
-import com.Vitalij.myPuzzleList.user.dto.LoginResponseDto;
-import com.Vitalij.myPuzzleList.user.dto.UserDetailsDto;
+import com.Vitalij.myPuzzleList.user.userDto.LoginRequestDto;
+import com.Vitalij.myPuzzleList.user.userDto.LoginResponseDto;
+import com.Vitalij.myPuzzleList.user.userDto.UserDetailsDto;
 import com.Vitalij.myPuzzleList.user.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +21,7 @@ import java.util.UUID;
 import static java.util.Objects.isNull;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:5000")
 @RequestMapping("/api/user/")
 public class UserController {
     private final UserService userService;
@@ -51,7 +51,7 @@ public class UserController {
     ) {
         if (sortBy.equals("title")) sortBy = "puzzle.title";
         else if (sortBy.equals("status")) sortBy = "status.name";
-        Pageable pageable = PageRequest.of(pageNo - 1, 2, Sort.by(Sort.Direction.fromString(direction), sortBy));
+        Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by(Sort.Direction.fromString(direction), sortBy));
         return puzzleService.getUserCollectionPuzzles(username, pageable);
     }
 

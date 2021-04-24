@@ -1,4 +1,4 @@
-package com.Vitalij.myPuzzleList.puzzle.dto;
+package com.Vitalij.myPuzzleList.puzzle.puzzleDto;
 
 import lombok.Builder;
 import lombok.Value;

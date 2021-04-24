@@ -1,13 +1,11 @@
 package com.Vitalij.myPuzzleList.user.service;
 
-import com.Vitalij.myPuzzleList.user.dto.LoginRequestDto;
-import com.Vitalij.myPuzzleList.user.dto.UserDetailsDto;
+import com.Vitalij.myPuzzleList.user.userDto.LoginRequestDto;
+import com.Vitalij.myPuzzleList.user.userDto.UserDetailsDto;
 import com.Vitalij.myPuzzleList.user.model.UserDetails;
-import com.Vitalij.myPuzzleList.user.repository.UserRepository;
-import org.springframework.dao.DataAccessException;
+import com.Vitalij.myPuzzleList.user.userRepository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.stereotype.Service;
 
 import static java.util.Objects.isNull;

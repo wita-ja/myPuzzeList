@@ -1,4 +1,4 @@
-package com.Vitalij.myPuzzleList.puzzle.repository;
+package com.Vitalij.myPuzzleList.puzzle.puzzleRepository;
 
 import com.Vitalij.myPuzzleList.puzzle.model.Puzzle;
 import com.Vitalij.myPuzzleList.puzzle.model.UserPuzzle;
