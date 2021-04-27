@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios';
 import useAxios from 'axios-hooks';
 import React, { useEffect, useState } from 'react';
 import {
@@ -74,7 +73,6 @@ const LoginModal = (props: LoginModalProps) => {
     });
 
     if (response.data.loggedIn === true) {
-      console.log('Data px: ' + JSON.stringify(response.data));
       onSuccess(response.data);
       onModalClose();
     } else {
@@ -114,7 +112,6 @@ const LoginModal = (props: LoginModalProps) => {
 
   return (
     <Modal
-      as={Form}
       open={open}
       onClose={onModalClose}
       onOpen={onOpen}

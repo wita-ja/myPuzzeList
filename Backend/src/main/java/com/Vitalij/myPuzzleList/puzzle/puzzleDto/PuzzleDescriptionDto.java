@@ -1,4 +1,4 @@
-package com.Vitalij.myPuzzleList.puzzle.dto;
+package com.Vitalij.myPuzzleList.puzzle.puzzleDto;
 
 import lombok.Builder;
 import lombok.Value;
@@ -8,15 +8,16 @@ import java.util.UUID;
 
 @Value
 @Builder
-public class SubmittedPuzzleDto {
+public class PuzzleDescriptionDto {
     UUID id;
     String title;
     String description;
     String difficulty;
     String type;
     String brand;
+    List<String> material;
     List<String> imagePath;
-    List<String> materials;
-    Boolean approved;
-    Boolean rejected;
+    Double averageScore;
+    List<PuzzleSolutionStepDto> solutionSteps;
+    Integer solutionCost;
 }

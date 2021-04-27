@@ -1,7 +1,6 @@
-package com.Vitalij.myPuzzleList.puzzle.repository;
+package com.Vitalij.myPuzzleList.puzzle.puzzleRepository;
 
 import com.Vitalij.myPuzzleList.puzzle.model.Material;
-import com.Vitalij.myPuzzleList.puzzle.model.Type;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
