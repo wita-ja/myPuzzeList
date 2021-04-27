@@ -1,11 +1,11 @@
 package com.Vitalij.myPuzzleList.user.controller;
 
-
 import com.Vitalij.myPuzzleList.puzzle.puzzleDto.CollectionPuzzleDto;
 import com.Vitalij.myPuzzleList.puzzle.puzzleDto.CollectionPuzzleRequestBodyDto;
 import com.Vitalij.myPuzzleList.puzzle.service.PuzzleService;
 import com.Vitalij.myPuzzleList.user.userDto.LoginRequestDto;
 import com.Vitalij.myPuzzleList.user.userDto.LoginResponseDto;
+import com.Vitalij.myPuzzleList.user.userDto.NewUserRequestDto;
 import com.Vitalij.myPuzzleList.user.userDto.UserDetailsDto;
 import com.Vitalij.myPuzzleList.user.service.UserService;
 import org.springframework.data.domain.Page;
@@ -32,7 +32,6 @@ public class UserController {
         this.puzzleService = puzzleService;
     }
 
-
     @GetMapping(value = "/{username}")
     public UserDetailsDto getUserDetails(
             @PathVariable String username
@@ -41,7 +40,6 @@ public class UserController {
     }
 
     //TODO change size to 25
-
     @GetMapping(value = "/{username}/collection")
     public Page<CollectionPuzzleDto> getUserCollectionDetails(
             @PathVariable String username,
@@ -123,5 +121,12 @@ public class UserController {
         } else return LoginResponseDto.builder()
                 .loggedIn(false)
                 .build();
+    }
+
+    @PostMapping(value = "/create")
+    public ResponseEntity<Object> createUser(
+            @RequestBody NewUserRequestDto requestBody
+    ) {
+        return userService.createUser(requestBody);
     }
 }
