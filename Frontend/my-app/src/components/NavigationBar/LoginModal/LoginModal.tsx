@@ -73,7 +73,6 @@ const LoginModal = (props: LoginModalProps) => {
     });
 
     if (response.data.loggedIn === true) {
-      console.log('Data px: ' + JSON.stringify(response.data));
       onSuccess(response.data);
       onModalClose();
     } else {

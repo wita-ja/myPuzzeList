@@ -35,7 +35,7 @@ const SignUpModal = (props: LoginModalProps) => {
     executePost,
   ] = useAxios(
     {
-      url: `http://localhost:8080/api/user/login`,
+      url: `http://localhost:8080/api/user/create`,
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -78,24 +78,22 @@ const SignUpModal = (props: LoginModalProps) => {
 
   const handleLogin = async (event: React.MouseEvent) => {
     event.preventDefault();
-    /* 
+
     const response = await executePost({
       data: {
         username: usernameInputValue,
-        password: passwordInputValue,
+        password: confirmPasswordInputValue,
+        ageGroup: ageGroupDropdownValue,
+        email: emailInputValue,
       },
     });
 
-    if (response.data.loggedIn === true) {
-      console.log('Data px: ' + JSON.stringify(response.data));
-      onSuccess(response.data);
+    if (response.status === 201) {
+      onSuccess();
       onModalClose();
     } else {
-      setPostErrorMessage('Username or Password is incorrect');
-    } */
-    console.log('hoorai');
-    onModalClose();
-    onSuccess();
+      setPostErrorMessage('Internal server error');
+    }
   };
 
   const onModalClose = () => {
@@ -285,7 +283,7 @@ const SignUpModal = (props: LoginModalProps) => {
             Sign up
           </Button>
         </Form>
-        {/* {
+        {
           //TODO error handling component
           //@ts-ignore
           (postErrorMessage?.error === 'Internal Server Error' ||
@@ -297,7 +295,7 @@ const SignUpModal = (props: LoginModalProps) => {
               </Header>
             </Container>
           )
-        } */}
+        }
       </Modal.Content>
     </Modal>
   );

@@ -21,7 +21,7 @@ import java.util.UUID;
 import static java.util.Objects.isNull;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5000")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/user/")
 public class UserController {
     private final UserService userService;

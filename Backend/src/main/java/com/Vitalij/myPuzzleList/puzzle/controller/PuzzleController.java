@@ -14,7 +14,7 @@ import java.util.UUID;
 import static java.util.Objects.isNull;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5000")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/puzzle/")
 public class PuzzleController {
     private final PuzzleService puzzleService;

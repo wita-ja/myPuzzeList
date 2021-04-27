@@ -96,6 +96,7 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
   const [state, setState] = useState({} as PuzzleDescription);
   const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [showSolutionToast, setShowSolutionToast] = useState(false);
   const [allowToAdd, setAllowToAdd] = useState(false);
   const [isSolutionUnlocked, setSolutionUnlocked] = useState(false);
   const [showSolutionUnlockConfirm, setShowSolutionUnlockConfirm] = useState(
@@ -121,10 +122,7 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
   }, [getPuzzleData]);
 
   useEffect(() => {
-    if (showToast === true && isSolutionUnlocked === true) {
-      notifyUnlockSuccesfull();
-      setTimeout(() => setShowToast(false), 3500);
-    } else if (showToast === true) {
+    if (showToast === true) {
       setAllowToAdd(false);
       notify();
       setTimeout(() => setShowToast(false), 3500);
@@ -132,12 +130,11 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
   }, [showToast]);
 
   useEffect(() => {
-    if (showSolutionUnlockConfirm === false) {
-      setSolutionUnlocked(true);
+    if (showSolutionToast === true) {
       notifyUnlockSuccesfull();
-      setTimeout(() => setShowToast(false), 3500);
+      setTimeout(() => setShowSolutionToast(false), 3500);
     }
-  }, [showSolutionUnlockConfirm]);
+  }, [showSolutionToast]);
 
   useEffect(() => {
     if (props.isLogged) {
@@ -181,8 +178,8 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
       },
     });
     setSolutionUnlocked(true);
-
     setShowSolutionUnlockConfirm(false);
+    setShowSolutionToast(true);
   };
 
   if ((getPuzzleError && getPuzzleLoading) || getPuzzleError) {
