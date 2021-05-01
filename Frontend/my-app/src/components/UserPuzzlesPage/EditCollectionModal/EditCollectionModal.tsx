@@ -124,7 +124,6 @@ const EditCollectionModal = (props: EditCollectionModalProps) => {
     }
   }, [getData, getLoading, getError]);
 
-  // TODO update to putError
   useEffect(() => {
     setPutErrorMessage(putError?.response?.data);
   }, [putError]);
@@ -283,7 +282,6 @@ const EditCollectionModal = (props: EditCollectionModalProps) => {
             </Grid.Column>
           </GridRow>
           {
-            //TODO error handling component
             //@ts-ignore
             (putErrorMessage?.error === 'Internal Server Error' ||
               //@ts-ignore
@@ -296,13 +294,13 @@ const EditCollectionModal = (props: EditCollectionModalProps) => {
             )
           }
           <GridRow key={'modal_submitButtons'}>
-            <Grid.Column width='3' floated='right'>
-              <Button size='mini' onClick={handleDeleteButtonClick}>
+            <Grid.Column width='6' floated='right'>
+              <Button size='mini' onClick={handleDeleteButtonClick} negative>
                 Delete puzzle
               </Button>
             </Grid.Column>
-            <Grid.Column width='6' floated='right'>
-              <Button size='mini' onClick={handleSubmit}>
+            <Grid.Column width='6' floated='left'>
+              <Button size='mini' onClick={handleSubmit} primary>
                 Submit
               </Button>
             </Grid.Column>

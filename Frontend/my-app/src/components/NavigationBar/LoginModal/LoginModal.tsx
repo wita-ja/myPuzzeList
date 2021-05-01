@@ -151,12 +151,12 @@ const LoginModal = (props: LoginModalProps) => {
             type='submit'
             onClick={handleLogin}
             disabled={isLoginDisabled}
+            primary
           >
             Log in
           </Button>
         </Form>
         {
-          //TODO error handling component
           //@ts-ignore
           (postErrorMessage?.error === 'Internal Server Error' ||
             //@ts-ignore
@@ -168,16 +168,13 @@ const LoginModal = (props: LoginModalProps) => {
             </Container>
           )
         }
-        {
-          //TODO error handling component
-          postErrorMessage === 'Username or Password is incorrect' && (
-            <Container textAlign='center'>
-              <Header as='h5' className='error'>
-                {postErrorMessage}
-              </Header>
-            </Container>
-          )
-        }
+        {postErrorMessage === 'Username or Password is incorrect' && (
+          <Container textAlign='center'>
+            <Header as='h5' className='error'>
+              {postErrorMessage}
+            </Header>
+          </Container>
+        )}
       </Modal.Content>
     </Modal>
   );

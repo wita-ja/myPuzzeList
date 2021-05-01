@@ -100,8 +100,6 @@ const SubmittedPuzzleTable = () => {
     setState({ ...state, activePage: pageInfo.activePage as number });
   };
 
-  //if (state.loading) return <Loader active></Loader>;
-  //TODO Implement error page component
   if (state.error) {
     console.log(state.error.response?.data);
     return (
@@ -177,9 +175,7 @@ const SubmittedPuzzleTable = () => {
                         >
                           {submittedPuzzle.title}
                           <Header.Subheader>
-                            {
-                              submittedPuzzle.description /* TODO Egle kaip slepia overflow characteriu (css text-overflow*/
-                            }
+                            {submittedPuzzle.description}
                           </Header.Subheader>
                         </Header>
                       </Table.Cell>

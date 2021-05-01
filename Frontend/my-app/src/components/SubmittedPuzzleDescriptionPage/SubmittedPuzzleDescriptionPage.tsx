@@ -142,7 +142,6 @@ export const SubmittedPuzzleDescriptionPage = (props: {
     );
   }
   if (isLoading) return <Loader active></Loader>;
-  //TODO Implement error page component
 
   return (
     <Container>

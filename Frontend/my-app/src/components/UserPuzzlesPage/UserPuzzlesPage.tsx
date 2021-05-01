@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
-import { Container, Header } from 'semantic-ui-react';
+import {
+  Container,
+  Grid,
+  GridColumn,
+  GridRow,
+  Header,
+  Input,
+} from 'semantic-ui-react';
 import UserPuzzlesTable from './UserPuzzlesTable';
 
 const UserPuzzlesPage = (props: { username: string; isLogged: boolean }) => {
@@ -15,7 +22,7 @@ const UserPuzzlesPage = (props: { username: string; isLogged: boolean }) => {
       setTimeout(() => setShowUpdateToast(false), 3500);
     } else if (showDeleteToast === true) {
       notifyDelete();
-      setTimeout(() => setShowUpdateToast(false), 3500);
+      setTimeout(() => setShowDeleteToast(false), 3500);
     }
   }, [showUpdateToast, showDeleteToast]);
 
@@ -39,6 +46,14 @@ const UserPuzzlesPage = (props: { username: string; isLogged: boolean }) => {
         <div>
           <Header as='h1'>{`${username} Puzzle Collection`}</Header>
         </div>
+        <Grid columns='1'>
+          <GridRow>
+            <GridColumn textAlign='right'>
+              <Input className='search' placeholder='Search...' />
+            </GridColumn>
+          </GridRow>
+        </Grid>
+
         <UserPuzzlesTable
           username={username}
           enableUpdateToast={() => setShowUpdateToast(true)}

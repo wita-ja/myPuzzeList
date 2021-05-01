@@ -200,16 +200,13 @@ const AddToCollectionModal = (props: AddToCollectionModalProps) => {
                     )}
                   </Dropdown.Menu>
                 </Dropdown>
-                {
-                  //TODO error handling component
-                  postErrorMessage === 'Status is required' && (
-                    <Container textAlign='center'>
-                      <Header as='h5' className='error'>
-                        {postError?.response?.data}
-                      </Header>
-                    </Container>
-                  )
-                }
+                {postErrorMessage === 'Status is required' && (
+                  <Container textAlign='center'>
+                    <Header as='h5' className='error'>
+                      {postError?.response?.data}
+                    </Header>
+                  </Container>
+                )}
               </Grid.Column>
             </GridRow>
 
@@ -240,7 +237,6 @@ const AddToCollectionModal = (props: AddToCollectionModalProps) => {
               </Grid.Column>
             </GridRow>
             {
-              //TODO error handling component
               //@ts-ignore
               (postErrorMessage?.error === 'Internal Server Error' ||
                 //@ts-ignore
@@ -252,17 +248,14 @@ const AddToCollectionModal = (props: AddToCollectionModalProps) => {
                 </Container>
               )
             }
-            {
-              //TODO error handling component
-              postErrorMessage ===
-                'User collection already contains this puzzle' && (
-                <Container textAlign='center'>
-                  <Header as='h5' className='error'>
-                    {postError?.response?.data}
-                  </Header>
-                </Container>
-              )
-            }
+            {postErrorMessage ===
+              'User collection already contains this puzzle' && (
+              <Container textAlign='center'>
+                <Header as='h5' className='error'>
+                  {postError?.response?.data}
+                </Header>
+              </Container>
+            )}
             <GridRow key={'modal_submitButtons'} centered>
               <Button size='mini' onClick={onModalClose}>
                 Cancel
@@ -271,6 +264,7 @@ const AddToCollectionModal = (props: AddToCollectionModalProps) => {
                 size='mini'
                 disabled={isSubmitDisabled.value}
                 onClick={handleSubmit}
+                primary
               >
                 Submit
               </Button>
