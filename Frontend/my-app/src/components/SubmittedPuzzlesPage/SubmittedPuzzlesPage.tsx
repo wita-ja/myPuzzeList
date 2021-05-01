@@ -1,5 +1,12 @@
 import React from 'react';
-import { Container, Grid, GridColumn, GridRow, Input } from 'semantic-ui-react';
+import {
+  Button,
+  Container,
+  Grid,
+  GridColumn,
+  GridRow,
+  Input,
+} from 'semantic-ui-react';
 import SubmittedPuzzleTable from './SubmittedPuzzleTable';
 
 const SubmittedPuzzlePage = () => {
@@ -12,7 +19,11 @@ const SubmittedPuzzlePage = () => {
         <Grid columns='1'>
           <GridRow>
             <GridColumn textAlign='right'>
-              <Input size='small' className='search' placeholder='Search...' />
+              <Input
+                size='small'
+                action={<Button primary>Search</Button>}
+                placeholder='Search...'
+              />
             </GridColumn>
           </GridRow>
         </Grid>

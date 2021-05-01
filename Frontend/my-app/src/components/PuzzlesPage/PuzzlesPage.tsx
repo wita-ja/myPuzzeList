@@ -40,6 +40,9 @@ const PuzzlesPage = (props: { isLogged: boolean }) => {
             <GridColumn>
               <h1>Puzzle List</h1>
             </GridColumn>
+            <GridColumn></GridColumn>
+          </GridRow>
+          <GridRow className='lessPadded'>
             <GridColumn>
               {props.isLogged && (
                 <SubmitPuzzleModal
@@ -47,15 +50,16 @@ const PuzzlesPage = (props: { isLogged: boolean }) => {
                   onOpen={() => setShowModal(true)}
                   onClose={() => setShowModal(false)}
                   onSuccess={() => setShowToast(true)}
-                  trigger={<Button floated='right'>Submit puzzle</Button>}
+                  trigger={<Button floated='left'>Submit puzzle</Button>}
                 ></SubmitPuzzleModal>
               )}
             </GridColumn>
-          </GridRow>
-          <GridRow className='lessPadded'>
-            <GridColumn></GridColumn>
             <GridColumn textAlign='right'>
-              <Input className='search' placeholder='Search...' />
+              <Input
+                className='search'
+                action={<Button primary>Search</Button>}
+                placeholder='Search...'
+              />
             </GridColumn>
           </GridRow>
         </Grid>
