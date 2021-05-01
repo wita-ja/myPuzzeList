@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import {
+  Button,
   Container,
   Grid,
   GridColumn,
@@ -49,7 +50,11 @@ const UserPuzzlesPage = (props: { username: string; isLogged: boolean }) => {
         <Grid columns='1'>
           <GridRow>
             <GridColumn textAlign='right'>
-              <Input className='search' placeholder='Search...' />
+              <Input
+                className='search'
+                action={<Button primary>Search</Button>}
+                placeholder='Search...'
+              />
             </GridColumn>
           </GridRow>
         </Grid>
