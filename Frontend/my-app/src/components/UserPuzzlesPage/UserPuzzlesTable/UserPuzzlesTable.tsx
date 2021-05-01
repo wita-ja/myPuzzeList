@@ -140,7 +140,7 @@ const UserPuzzlesTable = (props: {
               <Table.HeaderCell
                 sorted={
                   state.column === 'title'
-                    ? (state.direction as 'ascending' | 'descending') //TODO Simonas
+                    ? (state.direction as 'ascending' | 'descending')
                     : undefined
                 }
                 onClick={handleSort('title')}
@@ -188,11 +188,7 @@ const UserPuzzlesTable = (props: {
                       color='blue'
                     >
                       {puzzle.title}
-                      <Header.Subheader>
-                        {
-                          puzzle.description /* TODO Egle kaip slepia overflow characteriu (css text-overflow*/
-                        }
-                      </Header.Subheader>
+                      <Header.Subheader>{puzzle.description}</Header.Subheader>
                     </Header>
                   </Table.Cell>
                   <Table.Cell width='4'>{puzzle.userScore || 'N/A'}</Table.Cell>

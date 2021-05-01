@@ -4,13 +4,10 @@ import { useParams } from 'react-router-dom';
 import { Container, Grid, Header, Loader } from 'semantic-ui-react';
 import UserDetails from '../../dataTypes/UserDetails';
 
-//TODO fetch info from back
 interface RouteParams {
   username: string;
 }
 
-//TODO display inside of container on the left
-//TODO basic info edit mode
 const UserProfilePage = () => {
   let { username } = useParams<RouteParams>();
 
@@ -23,7 +20,6 @@ const UserProfilePage = () => {
 
   const [state, setState] = useState(data as UserDetails);
   const [isLoading, setIsLoading] = useState(true);
-  //TODO Simonas
   const [profileLabelValues, setProfileLabelValues] = useState({
     Description: '',
     Role: '',
@@ -69,7 +65,6 @@ const UserProfilePage = () => {
     );
   }
   if (isLoading) return <Loader active></Loader>;
-  //TODO Implement error page component
 
   return (
     <Container>
@@ -99,10 +94,6 @@ const UserProfilePage = () => {
                 }
               )}
             </Grid>
-          </Grid.Column>
-
-          <Grid.Column width='6'>
-            <Header as={'h2'}>Puzzle Statistics(future)</Header>
           </Grid.Column>
         </Grid>
       </>

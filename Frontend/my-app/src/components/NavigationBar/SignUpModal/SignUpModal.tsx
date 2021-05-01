@@ -279,12 +279,12 @@ const SignUpModal = (props: LoginModalProps) => {
             type='submit'
             onClick={handleLogin}
             disabled={isSubmitDisabled}
+            primary
           >
             Sign up
           </Button>
         </Form>
         {
-          //TODO error handling component
           //@ts-ignore
           (postErrorMessage?.error === 'Internal Server Error' ||
             //@ts-ignore

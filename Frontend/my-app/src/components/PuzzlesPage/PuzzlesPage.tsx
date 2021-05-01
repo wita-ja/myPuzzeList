@@ -6,9 +6,12 @@ import {
   Grid,
   GridColumn,
   GridRow,
+  Input,
 } from 'semantic-ui-react';
 import PuzzleTable from './PuzzleTable';
 import SubmitPuzzleModal from './SubmitPuzzleModal';
+
+import './PuzzlePage.styles.css';
 
 const PuzzlesPage = (props: { isLogged: boolean }) => {
   const [showModal, setShowModal] = useState(false);
@@ -33,7 +36,7 @@ const PuzzlesPage = (props: { isLogged: boolean }) => {
       <ToastContainer position='top-center' autoClose={3000} />
       <Container>
         <Grid columns={2}>
-          <GridRow>
+          <GridRow className='firstLessPadded'>
             <GridColumn>
               <h1>Puzzle List</h1>
             </GridColumn>
@@ -44,9 +47,15 @@ const PuzzlesPage = (props: { isLogged: boolean }) => {
                   onOpen={() => setShowModal(true)}
                   onClose={() => setShowModal(false)}
                   onSuccess={() => setShowToast(true)}
-                  trigger={<Button floated={'right'}>Submit puzzle</Button>}
+                  trigger={<Button floated='right'>Submit puzzle</Button>}
                 ></SubmitPuzzleModal>
               )}
+            </GridColumn>
+          </GridRow>
+          <GridRow className='lessPadded'>
+            <GridColumn></GridColumn>
+            <GridColumn textAlign='right'>
+              <Input className='search' placeholder='Search...' />
             </GridColumn>
           </GridRow>
         </Grid>

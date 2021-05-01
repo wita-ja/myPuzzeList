@@ -225,7 +225,6 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
               </Header>
               <Grid padded='horizontally' columns='2'>
                 {puzzleInfoLabels.map((el: String) => {
-                  //TODO Simonas Komponentas ane? :D
                   return (
                     <Grid.Row>
                       <Grid.Column
@@ -354,8 +353,6 @@ function PuzzleDescriptionPage(props: { username: string; isLogged: boolean }) {
       </Container>
     );
   }
-
-  //TODO Implement error page component
 }
 
 const puzzleInfoLabels = ['Type', 'Difficulty', 'Brand'];

@@ -8,6 +8,7 @@ import {
   Loader,
   PaginationProps,
   Container,
+  Input,
 } from 'semantic-ui-react';
 import Puzzle from '../../../dataTypes/Puzzle';
 import _ from 'lodash';
@@ -16,7 +17,6 @@ import useAxios from 'axios-hooks';
 import { AxiosError } from 'axios';
 import '../PuzzleTable/PuzzleTable.styles.css';
 
-//TODO Improve Table.footer to disable buttons, show next batch of puzzles
 const PuzzleTable = () => {
   const [state, setState] = useState({
     pageSize: 0,
@@ -98,8 +98,6 @@ const PuzzleTable = () => {
     setState({ ...state, activePage: pageInfo.activePage as number });
   };
 
-  //if (state.loading) return <Loader active></Loader>;
-  //TODO Implement error page component
   if (state.error) {
     console.log(state.error.response?.data);
     return (
@@ -112,7 +110,7 @@ const PuzzleTable = () => {
       </>
     );
   }
-  //URL Change while navigating between pages
+
   return (
     <>
       {state.loading ? (
@@ -128,7 +126,7 @@ const PuzzleTable = () => {
                 <Table.HeaderCell
                   sorted={
                     state.column === 'title'
-                      ? (state.direction as 'ascending' | 'descending') //TODO Simonas
+                      ? (state.direction as 'ascending' | 'descending')
                       : undefined
                   }
                   onClick={handleSort('title')}
@@ -183,9 +181,7 @@ const PuzzleTable = () => {
                       >
                         {puzzle.title}
                         <Header.Subheader>
-                          {
-                            puzzle.description /* TODO Egle kaip slepia overflow characteriu (css text-overflow*/
-                          }
+                          {puzzle.description}
                         </Header.Subheader>
                       </Header>
                     </Table.Cell>

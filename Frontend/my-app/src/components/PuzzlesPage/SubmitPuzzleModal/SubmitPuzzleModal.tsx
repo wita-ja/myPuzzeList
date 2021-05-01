@@ -268,7 +268,6 @@ const SubmitPuzzleModal = (props: SubmitPuzzleModalProps) => {
         onModalClose();
       }
     } else {
-      //error  notifa image parodyti
     }
   };
 
@@ -512,7 +511,6 @@ const SubmitPuzzleModal = (props: SubmitPuzzleModalProps) => {
             </GridRow>
 
             {
-              //TODO error handling component
               //@ts-ignore
               (postPuzzleErrorMessage === 'Internal Server Error' ||
                 postPuzzleErrorMessage === 'Bad Request') && (
@@ -523,17 +521,14 @@ const SubmitPuzzleModal = (props: SubmitPuzzleModalProps) => {
                 </Container>
               )
             }
-            {
-              //TODO error handling component
-              postPuzzleErrorMessage ===
-                'Puzzle with such title already submitted' && (
-                <Container textAlign='center'>
-                  <Header as='h5' className='error'>
-                    {postPuzzleError?.response?.data}
-                  </Header>
-                </Container>
-              )
-            }
+            {postPuzzleErrorMessage ===
+              'Puzzle with such title already submitted' && (
+              <Container textAlign='center'>
+                <Header as='h5' className='error'>
+                  {postPuzzleError?.response?.data}
+                </Header>
+              </Container>
+            )}
             <GridRow key={'modal_submitButtons'} centered>
               <Button size='mini' onClick={onModalClose}>
                 Cancel
@@ -542,6 +537,7 @@ const SubmitPuzzleModal = (props: SubmitPuzzleModalProps) => {
                 size='mini'
                 disabled={isSubmitDisabled}
                 onClick={handleSubmit}
+                primary
               >
                 Submit
               </Button>
