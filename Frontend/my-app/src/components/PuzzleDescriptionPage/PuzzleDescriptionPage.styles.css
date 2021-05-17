@@ -1,0 +1,11 @@
+.ui.PuzzleInfo {
+  margin-top: 5px;
+  margin-bottom: 20px;
+}
+
+.ui.grid > .row > .grey.column {
+  margin-top: -0.5rem;
+  margin-bottom: -0.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
